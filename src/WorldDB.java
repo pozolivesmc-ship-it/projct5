@@ -3,8 +3,8 @@ import java.util.Random;
 /**
  * The world for this project. We have a Skip List and a Bintree
  *
- * @author {Your Name Here}
- * @version {Put Something Here}
+ * @author {Giovanni Garcia}
+ * @version {11.16.2025}
  */
 public class WorldDB implements ATC {
     private final int worldSize = 1024;

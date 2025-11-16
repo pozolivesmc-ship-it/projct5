@@ -2,8 +2,8 @@ import java.util.Random;
 import student.TestCase;
 
 /**
- * @author {Your Name Here}
- * @version {Put Something Here}
+ * @author {Giovanni Garcia}
+ * @version {11.16.2025}
  */
 public class AirControlTest extends TestCase {
 

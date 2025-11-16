@@ -1,0 +1,105 @@
+
+/**
+ * This is the AirObject class that will be used for 
+ * AirPlane, Balloon, Bird, Drone, and Rocket 
+ * @author {Giovanni Garcia}
+ * @version {11.16.2025}
+ */
+public abstract class AirObject implements Comparable<AirObject>{
+
+    private int x;
+    private int y;
+    private int z;
+    private int xwid;
+    private int ywid;
+    private int zwid;
+    private String name;
+    
+    /**
+     * This is the constructor for the AirObject class
+     * @param name is the name 
+     * @param x is the x coord
+     * @param y is the y coord
+     * @param z is the z coord
+     * @param xwid is the x width
+     * @param ywid is the y width
+     * @param zwid is the z width
+     */
+    public AirObject(String name, int x, int y, int z,
+                     int xwid, int ywid, int zwid)
+    {
+        //This updates all the parameters
+        this.name = name;
+        this.x = x;
+        this.y = y;
+        this.z = z;
+        this.xwid = xwid;
+        this.ywid = ywid;
+        this.zwid = zwid;
+    }
+    /**
+     * This is the getter method for x coord
+     * @return x coord
+     */
+    public int getXorig()
+    {
+        return this.x;
+    }
+    /**
+     * This is the getter method for y coord
+     * @return y coord
+     */
+    public int getYorig()
+    {
+        return this.y;
+    }
+    /**
+     * This is the getter method for z coord
+     * @return z coord
+     */
+    public int getZorig()
+    {
+        return this.z;
+    }
+    /**
+     * This is the getter method for x width
+     * @return x width
+     */
+    public int getXwidth()
+    {
+        return this.xwid;
+    }
+    /**
+     * This is the getter method for y width
+     * @return y width
+     */
+    public int getYwidth()
+    {
+        return this.ywid;
+    }
+    /**
+     * This is the getter method for z width
+     * @return z widths
+     */
+    public int getZwidth()
+    {
+        return this.zwid;
+    }
+    /**
+     * This is the getter method for name
+     * @return string for name
+     */
+    public String getName()
+    {
+        return this.name;
+    }
+    /**
+     * This is the compareTo method that compares the objects
+     * @param other is the object being compared
+     */
+    @Override
+    public int compareTo(AirObject other)
+    {
+        return this.name.compareTo(other.name);
+    }
+}
