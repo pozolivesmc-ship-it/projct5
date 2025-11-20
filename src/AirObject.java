@@ -124,10 +124,6 @@ public abstract class AirObject implements Comparable<AirObject>{
         {
             return false;
         }
-        if (x + xwid <= 0 || y + ywid <= 0 || z + zwid <= 0)
-        {
-            return false;
-        }
         return true;
     }
 }
