@@ -44,4 +44,34 @@ public class Balloon extends AirObject{
     {
         return this.ascentRate;
     }
+    /**
+     * This is the toString method
+     * @return String for Balloon
+     */
+    public String toString()
+    {
+        return "Balloon " + getName() + " " + getXorig() + " " + getYorig()
+               + " " + getZorig() + " " + getXwidth() + " " + getYwidth()
+               + " " + getZwidth() + " " + type + " " + ascentRate;
+    }
+    /**
+     * This checks if the input is valid
+     * @return true or false
+     */
+    public boolean isValid()
+    {
+        if (!super.isValid())
+        {
+            return false;
+        }
+        if (type == null)
+        {
+            return false;
+        }
+        if (ascentRate <= 0)
+        {
+            return false;
+        }
+        return true;
+    }
 }

@@ -55,4 +55,39 @@ public class AirPlane extends AirObject{
     {
         return this.engines;
     }
+    /**
+     * This is the toString method
+     * @return String for AirPlane
+     */
+    public String toString()
+    {
+        return "Airplane " + getName() + " " + getXorig() + " " + getYorig()
+               + " " + getZorig() + " " + getXwidth() + " " + getYwidth()
+               + " " + getZwidth() + " " + carrier + " " + flight +
+               " " + engines;
+    }
+    /**
+     * This checks if the input is valid
+     * @return true or false
+     */
+    public boolean isValid()
+    {
+        if (!super.isValid())
+        {
+            return false;
+        }
+        if (carrier == null)
+        {
+            return false;
+        }
+        if (flight <= 0)
+        {
+            return false;
+        }
+        if (engines <= 0)
+        {
+            return false;
+        }
+        return true;
+    }
 }

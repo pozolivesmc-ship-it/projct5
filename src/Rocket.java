@@ -7,7 +7,7 @@
 public class Rocket extends AirObject{
 
     private int ascentRate;
-    private float trajectory;
+    private double trajectory;
     /**
      * This is the Rocket class constructor
      * @param name is the name
@@ -22,7 +22,7 @@ public class Rocket extends AirObject{
      */
     public Rocket(String name, int x, int y, int z, 
                   int xwid, int ywid, int zwid,
-                  int ascentRate, float trajectory)
+                  int ascentRate, double trajectory)
     {
         super(name, x, y, z, xwid, ywid, zwid);
         this.ascentRate = ascentRate;
@@ -40,9 +40,38 @@ public class Rocket extends AirObject{
      * This is a getter method for trajectory
      * @return float for trajectory
      */
-    public float getTrajectory()
+    public double getTrajectory()
     {
         return this.trajectory;
     }
-    
+    /**
+     * This is the toString method
+     * @return String for Rocket
+     */
+    public String toString()
+    {
+        return "Rocket " + getName() + " " + getXorig() + " " + getYorig()
+               + " " + getZorig() + " " + getXwidth() + " " + getYwidth()
+               + " " + getZwidth() + " " + ascentRate + " " + trajectory;
+    }
+    /**
+     * This checks if the input is valid
+     * @return true or false
+     */
+    public boolean isValid()
+    {
+        if (!super.isValid())
+        {
+            return false;
+        }
+        if (ascentRate <= 0)
+        {
+            return false;
+        }
+        if (trajectory <= 0)
+        {
+            return false;
+        }
+        return true;
+    }
 }

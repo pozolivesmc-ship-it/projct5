@@ -43,6 +43,14 @@ public class Bintree {
         }
     }
     /**
+     * This is the insert method for Bintree
+     * @param object is the object inserted
+     */
+    public void insert(AirObject object)
+    {
+        //Finish this later
+    }
+    /**
      * This is the printTree method
      * @return String for the tree
      */

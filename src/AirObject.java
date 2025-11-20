@@ -102,4 +102,32 @@ public abstract class AirObject implements Comparable<AirObject>{
     {
         return this.name.compareTo(other.name);
     }
+    /**
+     * This checks if the input is valid
+     * @return true or false
+     */
+    public boolean isValid()
+    {
+        if (name == null)
+        {
+            return false;
+        }
+        if (x < 0 || y < 0 || z < 0)
+        {
+            return false;
+        }
+        if (x >= 1024 || y >= 1024 || z >= 1024)
+        {
+            return false;
+        }
+        if (xwid <= 0 || ywid <= 0 || zwid <= 0)
+        {
+            return false;
+        }
+        if (x + xwid <= 0 || y + ywid <= 0 || z + zwid <= 0)
+        {
+            return false;
+        }
+        return true;
+    }
 }

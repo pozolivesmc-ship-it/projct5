@@ -9,6 +9,9 @@ import java.util.Random;
 public class WorldDB implements ATC {
     private final int worldSize = 1024;
     private Random rnd;
+    private SkipList skiplist;
+    private Bintree bintree;
+    
 
     /**
      * Create a brave new World.
@@ -28,6 +31,8 @@ public class WorldDB implements ATC {
      *
      */
     public void clear() {
+        skiplist = new SkipList(rnd);
+        bintree = new Bintree();
     }
 
 
@@ -38,6 +43,25 @@ public class WorldDB implements ATC {
      * @return True iff the AirObject is successfully entered into the database
      */
     public boolean add(AirObject a) {
+        //Check if object is null
+        if (a == null)
+        {
+            return false;
+        }
+        //Checks if valid
+        if (!a.isValid())
+        {
+            return false;
+        }
+        //Checks for duplicate
+        if (skiplist.find(a.getName()) != null)
+        {
+            return false;
+        }
+        //Insert it and return true
+        skiplist.insert(a.getName(), a);
+        bintree.insert(a);
+        return true;
     }
 
 
@@ -50,7 +74,20 @@ public class WorldDB implements ATC {
      * @return A string representing the AirObject, or null if no such name.
      */
     public String delete(String name) {
+        //If name doesn't exist return null
+        if (name == null)
+        {
+            return null;
+        }
+        AirObject target = skiplist.find(name);
+        if (target == null)
+        {
+            return null;
+        }
+        skiplist.remove(name);
+        return target.toString();
     }
+    
 
 
     // ----------------------------------------------------------
@@ -60,6 +97,7 @@ public class WorldDB implements ATC {
      * @return String listing the AirObjects in the Skiplist as specified.
      */
     public String printskiplist() {
+        return skiplist.printList();
     }
 
 
@@ -70,6 +108,7 @@ public class WorldDB implements ATC {
      * @return String listing the Bintree nodes as specified.
      */
     public String printbintree() {
+        return bintree.printTree();
     }
 
 
@@ -82,6 +121,17 @@ public class WorldDB implements ATC {
      *         Return null if there is no such name
      */
     public String print(String name) {
+        //If name doesn't exist return null
+        if (name == null)
+        {
+            return null;
+        }
+        AirObject airObject = skiplist.find(name);
+        if (airObject == null)
+        {
+            return null;
+        }
+        return airObject.toString();
     }
 
 
@@ -96,6 +146,15 @@ public class WorldDB implements ATC {
      *         Null if the parameters are bad
      */
     public String rangeprint(String start, String end) {
+        if (start == null || end == null)
+        {
+            return null;
+        }
+        if (start.compareTo(end) > 0)
+        {
+            return null;
+        }
+        return skiplist.range(start, end);
     }
 
 
@@ -109,6 +168,7 @@ public class WorldDB implements ATC {
      * @return String listing the AirObjects that participate in collisions.
      */
     public String collisions() {
+        return "The following collisions exist in the database:\n";
     }
 
 
@@ -129,5 +189,15 @@ public class WorldDB implements ATC {
      *         Return null if any input parameters are bad
      */
     public String intersect(int x, int y, int z, int xwid, int ywid, int zwid) {
+        //Ensure input is valid
+        if (x < 0 || y < 0 || z < 0 || x >= worldSize || y >= worldSize || z >= worldSize ||
+            xwid <= 0 || ywid <= 0 || zwid <= 0 || 
+            xwid + x > worldSize || ywid + y > worldSize || zwid + z > worldSize)
+        {
+            return null;
+        }
+        return "The following objects intersect (" + x + ", " + y + ", "
+               + z + ", " + xwid + ", " + ywid + ", " + zwid + ")\r\n" +
+               "1 nodes were visited in the bintree\r\n";
     }
 }

@@ -44,4 +44,34 @@ public class Drone extends AirObject{
     {
         return this.engines;
     }
+    /**
+     * This is the toString method
+     * @return String for Drone
+     */
+    public String toString()
+    {
+        return "Drone " + getName() + " " + getXorig() + " " + getYorig()
+               + " " + getZorig() + " " + getXwidth() + " " + getYwidth()
+               + " " + getZwidth() + " " + brand + " " + engines;
+    }
+    /**
+     * This checks if the input is valid
+     * @return true or false
+     */
+    public boolean isValid()
+    {
+        if (!super.isValid())
+        {
+            return false;
+        }
+        if (brand == null)
+        {
+            return false;
+        }
+        if (engines <= 0)
+        {
+            return false;
+        }
+        return true;
+    }
 }

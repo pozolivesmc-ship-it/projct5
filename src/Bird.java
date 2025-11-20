@@ -43,4 +43,34 @@ public class Bird extends AirObject{
     {
         return this.number;
     }
+    /**
+     * This is the toString method
+     * @return String for Bird
+     */
+    public String toString()
+    {
+        return "Bird " + getName() + " " + getXorig() + " " + getYorig()
+               + " " + getZorig() + " " + getXwidth() + " " + getYwidth()
+               + " " + getZwidth() + " " + type + " " + number;
+    }
+    /**
+     * This checks if the input is valid
+     * @return true or false
+     */
+    public boolean isValid()
+    {
+        if (!super.isValid())
+        {
+            return false;
+        }
+        if (type == null)
+        {
+            return false;
+        }
+        if (number <= 0)
+        {
+            return false;
+        }
+        return true;
+    }
 }
