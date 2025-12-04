@@ -2,7 +2,7 @@
 /**
  * This is the Bintree class 
  * @author {Giovanni Garcia}
- * @version {11.20.2025}
+ * @version {12.4.2025}
  */
 public class Bintree {
     
@@ -24,12 +24,19 @@ public class Bintree {
         root = new EmptyNode();
     }
     
+    /**
+     * This is the interface for BinNode 
+     * since other nodes will be implementing them
+     */
     private interface BinNode
     {
         String print(int x, int y, int z, int w, int h, int d, int depth);
         int countNodes();
     }
     
+    /**
+     * This is the EmptyNode class
+     */
     private static class EmptyNode implements BinNode
     {
         public String print(int x, int y, int z, int w, int h, int d, int depth)

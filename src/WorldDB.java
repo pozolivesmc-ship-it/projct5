@@ -4,7 +4,7 @@ import java.util.Random;
  * The world for this project. We have a Skip List and a Bintree
  *
  * @author {Giovanni Garcia}
- * @version {11.16.2025}
+ * @version {12.4.2025}
  */
 public class WorldDB implements ATC {
     private final int worldSize = 1024;
