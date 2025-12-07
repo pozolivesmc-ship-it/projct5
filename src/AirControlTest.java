@@ -211,4 +211,100 @@ public class AirControlTest extends TestCase {
                 "1 nodes were visited in the bintree\n",
                 w.intersect(1, 1, 1, 1, 1, 1));
     }
+    /**
+     * This tests adding a null AirObject and print
+     */
+    public void testAddAndPrint()
+    {
+        Random rnd = new Random();
+        rnd.setSeed(0xCAFEBEEF);
+        WorldDB w = new WorldDB(rnd);
+        assertFalse(w.add(null));
+        assertTrue(w.add(new AirPlane("Air1",
+            0, 10, 1, 20, 2, 30, "USAir", 717, 4)));
+        assertFuzzyEquals(w.print("Air1") ,"Airplane Air1 0 10 1 20 2 30 USAir 717 4");
+    }
+    /**
+     * This tests when there's 2 of the same name
+     */
+    public void testDuplicateName()
+    {
+        Random rnd = new Random();
+        rnd.setSeed(0xCAFEBEEF);
+        WorldDB w = new WorldDB(rnd);
+        Bird b1 = new Bird("pterodactyl",
+            0, 100, 20, 10, 50, 50, "Dinosaur", 1);
+        Bird b2 = new Bird("pterodactyl",
+            10, 20, 30, 30, 30, 40, "Hawk", 2);
+        assertTrue(w.add(b1));
+        assertFalse(w.add(b2));
+        assertFuzzyEquals(w.print("pterodactyl"), "Bird pterodactyl 0 100 20 10 50 50 Dinosaur 1");
+    }
+    /**
+     * This tests the delete logic 
+     */
+    public void testDelete()
+    {
+        Random rnd = new Random();
+        rnd.setSeed(0xCAFEBEEF);
+        WorldDB w = new WorldDB(rnd);
+        Drone d = new Drone("Air2",
+            100, 1010, 101, 924, 2, 900, "Droners", 3);
+        assertTrue(w.add(d));
+        String removed = w.delete("Air2");
+        assertNotNull(removed);
+        assertTrue(removed.contains("Drone Air2"));
+        assertNull(w.print("Air2"));
+        assertNull(w.delete("air2"));
+    }
+    /**
+     * This tests the clear logic and ensures 
+     * everything gets reset
+     */
+    public void testClear()
+    {
+        Random rnd = new Random();
+        rnd.setSeed(0xCAFEBEEF);
+        WorldDB w = new WorldDB(rnd);
+        assertTrue(w.add(new Balloon("B1",
+            10, 11, 11, 21, 12, 31, "hot_air", 15)));
+        assertTrue(w.add(new Bird("pterodactyl",
+            0, 100, 20, 10, 50, 50, "Dinosaur", 1)));
+        assertNotNull(w.print("B1"));
+        assertNotNull(w.print("pterodactyl"));
+        w.clear();
+        assertNull(w.print("B1"));
+        assertNull(w.print("pterodactyl"));
+        assertFuzzyEquals(w.printskiplist(), "SkipList is empty");
+    }
+    /**
+     * This tests the rangeprint logic
+     */
+    public void testRangePrint()
+    {
+        Random rnd = new Random();
+        rnd.setSeed(0xCAFEBEEF);
+        WorldDB w = new WorldDB(rnd);
+        assertTrue(w.add(new Balloon("B1",
+            10, 11, 11, 21, 12, 31, "hot_air", 15)));
+        assertTrue(w.add(new Balloon("B2",
+            11, 10, 10, 20, 11, 30, "hot_air", 16)));
+        String result = w.rangeprint("a", "b");
+        assertNotNull(result);
+        assertTrue(result.contains("Found these records in the range a to b"));
+        assertFalse(result.contains("Balloon B1"));
+        assertFalse(result.contains("Balloon B2"));
+    }
+    /**
+     * This tests intersect for special cases
+     */
+    public void testIntersectExtraCase()
+    {
+        Random rnd = new Random();
+        rnd.setSeed(0xCAFEBEEF);
+        WorldDB w = new WorldDB(rnd);
+        assertNull(w.intersect(0, 0, 0, 0, 1, 1));
+        assertNull(w.intersect(0, 0, 0, 1, 1, 0));
+        assertNull(w.intersect(0, 0, 0, 1, 0, 1));
+    }
 }

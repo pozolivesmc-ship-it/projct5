@@ -7,6 +7,7 @@
  */
 public abstract class AirObject implements Comparable<AirObject>{
 
+    private static final int WORLD_SIZE = 1024;
     private int x;
     private int y;
     private int z;
@@ -116,11 +117,12 @@ public abstract class AirObject implements Comparable<AirObject>{
         {
             return false;
         }
-        if (x >= 1024 || y >= 1024 || z >= 1024)
+        if (xwid <= 0 || ywid <= 0 || zwid <= 0)
         {
             return false;
         }
-        if (xwid <= 0 || ywid <= 0 || zwid <= 0)
+        if (x + xwid > WORLD_SIZE || y + ywid > WORLD_SIZE
+            || z + zwid > WORLD_SIZE)
         {
             return false;
         }
