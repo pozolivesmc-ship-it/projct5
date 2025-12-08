@@ -32,30 +32,6 @@ public class AirPlane extends AirObject{
         this.engines = engines;
     }
     /**
-     * This is the getter method for carrier
-     * @return string for carrier
-     */
-    public String getCarrier()
-    {
-        return this.carrier;
-    }
-    /**
-     * This is the getter method for flight
-     * @return int for flight number
-     */
-    public int getFlight()
-    {
-        return this.flight;
-    }
-    /**
-     * This is the getter method for engines
-     * @return int for engines number
-     */
-    public int getEngines()
-    {
-        return this.engines;
-    }
-    /**
      * This is the toString method
      * @return String for AirPlane
      */

@@ -28,22 +28,6 @@ public class Bird extends AirObject{
         this.number = number;
     }
     /**
-     * This is a getter method for type
-     * @return string for type
-     */
-    public String getType()
-    {
-        return this.type;
-    }
-    /**
-     * This is a getter method for number
-     * @return int for number
-     */
-    public int getNumber()
-    {
-        return this.number;
-    }
-    /**
      * This is the toString method
      * @return String for Bird
      */

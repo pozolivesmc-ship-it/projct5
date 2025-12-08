@@ -29,22 +29,6 @@ public class Drone extends AirObject{
         this.engines = engines;
     }
     /**
-     * This is a getter method for brand
-     * @return string for brand
-     */
-    public String getBrand()
-    {
-        return this.brand;
-    }
-    /**
-     * This is a getter method for engines
-     * @return int for engines
-     */
-    public int getEngines()
-    {
-        return this.engines;
-    }
-    /**
      * This is the toString method
      * @return String for Drone
      */

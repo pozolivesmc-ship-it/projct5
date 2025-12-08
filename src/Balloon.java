@@ -29,22 +29,6 @@ public class Balloon extends AirObject{
         this.ascentRate = ascentRate;
     }
     /**
-     * This is a getter method for type
-     * @return string for type
-     */
-    public String getType()
-    {
-        return this.type;
-    }
-    /**
-     * This is a getter method for ascentRate
-     * @return int for ascentRate
-     */
-    public int getAscentRate()
-    {
-        return this.ascentRate;
-    }
-    /**
      * This is the toString method
      * @return String for Balloon
      */

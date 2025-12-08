@@ -29,22 +29,6 @@ public class Rocket extends AirObject{
         this.trajectory = trajectory;
     }
     /**
-     * This is a getter method for ascentRate
-     * @return int for ascentRate
-     */
-    public int getAscentRate()
-    {
-        return this.ascentRate;
-    }
-    /**
-     * This is a getter method for trajectory
-     * @return float for trajectory
-     */
-    public double getTrajectory()
-    {
-        return this.trajectory;
-    }
-    /**
      * This is the toString method
      * @return String for Rocket
      */

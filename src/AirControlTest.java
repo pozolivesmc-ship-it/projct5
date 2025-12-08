@@ -307,6 +307,19 @@ public class AirControlTest extends TestCase {
         assertNull(w.intersect(0, 0, 0, 1, 1, 0));
         assertNull(w.intersect(0, 0, 0, 1, 0, 1));
     }
-    
-    
+    /**
+     * This tests extra case with rangeprint
+     */
+    public void testRangePrintExtraCase()
+    {
+        Random rnd = new Random();
+        rnd.setSeed(0xCAFEBEEF);
+        WorldDB w = new WorldDB(rnd);
+        assertNull(w.rangeprint(null, "a"));
+        assertNull(w.rangeprint("b", null));
+        assertNull(w.rangeprint("z", "a"));
+        String result = w.rangeprint("a", "z");
+        assertNotNull(result);
+        assertTrue(result.startsWith("Found these records in the range a to z"));  
+    }
 }
