@@ -3,7 +3,7 @@
  * @author {Giovanni Garcia}
  * @version {12.4.2025}
  */
-public class AirPlane extends AirObject{
+public class AirPlane extends AirObject {
 
     private String carrier;
     private int flight;
@@ -60,10 +60,6 @@ public class AirPlane extends AirObject{
         {
             return false;
         }
-        if (engines <= 0)
-        {
-            return false;
-        }
-        return true;
+        return !(engines <= 0);
     }
 }

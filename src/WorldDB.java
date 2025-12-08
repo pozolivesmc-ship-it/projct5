@@ -196,8 +196,6 @@ public class WorldDB implements ATC {
         {
             return null;
         }
-        return "The following objects intersect (" + x + ", " + y + ", "
-               + z + ", " + xwid + ", " + ywid + ", " + zwid + ")\r\n" +
-               "1 nodes were visited in the bintree\r\n";
+        return bintree.intersect(x, y, z, xwid, ywid, zwid);
     }
 }

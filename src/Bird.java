@@ -3,7 +3,7 @@
  * @author {Giovanni Garcia}
  * @version {12.4.2025}
  */
-public class Bird extends AirObject{
+public class Bird extends AirObject {
 
     private String type;
     private int number;
@@ -51,10 +51,6 @@ public class Bird extends AirObject{
         {
             return false;
         }
-        if (number <= 0)
-        {
-            return false;
-        }
-        return true;
+        return !(number <= 0);
     }
 }

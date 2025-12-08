@@ -4,7 +4,7 @@
  * @author {Giovanni Garcia}
  * @version {12.4.2025}
  */
-public class Rocket extends AirObject{
+public class Rocket extends AirObject {
 
     private int ascentRate;
     private double trajectory;
@@ -52,10 +52,6 @@ public class Rocket extends AirObject{
         {
             return false;
         }
-        if (trajectory <= 0)
-        {
-            return false;
-        }
-        return true;
+        return !(trajectory <= 0);
     }
 }

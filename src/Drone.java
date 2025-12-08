@@ -4,7 +4,7 @@
  * @author {Giovanni Garcia}
  * @version {12.4.2025}
  */
-public class Drone extends AirObject{
+public class Drone extends AirObject {
 
     private String brand;
     private int engines;
@@ -52,10 +52,6 @@ public class Drone extends AirObject{
         {
             return false;
         }
-        if (engines <= 0)
-        {
-            return false;
-        }
-        return true;
+        return !(engines <= 0);
     }
 }

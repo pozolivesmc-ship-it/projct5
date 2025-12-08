@@ -3,7 +3,7 @@
  * @author {Giovanni Garcia}
  * @version {12.4.2025}
  */
-public class Balloon extends AirObject{
+public class Balloon extends AirObject {
     
     private String type;
     private int ascentRate;
@@ -52,10 +52,6 @@ public class Balloon extends AirObject{
         {
             return false;
         }
-        if (ascentRate <= 0)
-        {
-            return false;
-        }
-        return true;
+       return !(ascentRate <= 0);
     }
 }
