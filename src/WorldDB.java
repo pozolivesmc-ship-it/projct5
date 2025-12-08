@@ -9,7 +9,7 @@ import java.util.Random;
 public class WorldDB implements ATC {
     private final int worldSize = 1024;
     private Random rnd;
-    private SkipList skiplist;
+    private SkipList<String, AirObject> skiplist;
     private Bintree bintree;
     
 
@@ -31,7 +31,7 @@ public class WorldDB implements ATC {
      *
      */
     public void clear() {
-        skiplist = new SkipList(rnd);
+        skiplist = new SkipList<>(rnd);
         bintree = new Bintree();
     }
 

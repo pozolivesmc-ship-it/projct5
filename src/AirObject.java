@@ -110,7 +110,7 @@ public abstract class AirObject implements Comparable<AirObject>{
     public boolean isValid()
     {
         if (name == null)
-        {
+        { 
             return false;
         }
         if (x < 0 || y < 0 || z < 0)

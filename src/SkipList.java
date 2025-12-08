@@ -4,33 +4,36 @@ import java.util.Random;
  * This is the SkipList class 
  * @author {Giovanni Garcia}
  * @version {12.4.2025}
+ * @param <K> is for key (String)
+ * @param <V> is for value (AirObject)
  */
-public class SkipList {
+public class SkipList<K extends Comparable<K>, V> {
 
     private static final int HIGHEST_LEVEL = 16;
-    private SkipNode head;
+    private SkipNode<K, V> head;
     private int level;
     private Random rnd;
     
     /**
      * This is the inner SkipNode class
      */
-    private static class SkipNode
+    private static class SkipNode<K, V>
     {
-        String key ;
-        AirObject value;
-        SkipNode[] forward;
+        K key;
+        V value;
+        SkipNode<K, V>[] forward;
         /**
          * This is the constructor for SkipNode
          * @param key is the name
          * @param value is the AirObject
          * @param level is the level
          */
-        public SkipNode(String key, AirObject value, int level)
+        @SuppressWarnings("unchecked")
+        public SkipNode(K key, V value, int level)
         {
             this.key = key;
             this.value = value;
-            forward = new SkipNode[level + 1];
+            this.forward = (SkipNode<K, V>[])new SkipNode[level + 1];
         }    
     }
         /**
@@ -48,7 +51,7 @@ public class SkipList {
                 rnd = rand;
             }
             level = 0;
-            head = new SkipNode(null, null, HIGHEST_LEVEL);
+            head = new SkipNode<>(null, null, HIGHEST_LEVEL);
         }
         
         /**
@@ -56,10 +59,10 @@ public class SkipList {
          * @param name is the name we're looking for
          * @return AirObject found
          */
-        public AirObject find(String name)
+        public V find(K name)
         {
             //Start from the head
-            SkipNode start = head;
+            SkipNode<K, V> start = head;
             //Start comparing from the highest level 
             for (int i = level; i >= 0; i--)
             {
@@ -72,7 +75,7 @@ public class SkipList {
             //Move to it if exists
             start = start.forward[0];
             //If found and names match
-            if (start != null && start.key.equals(name))
+            if (start != null && start.key.compareTo(name) == 0)
             {
                 return start.value;
             }
@@ -83,7 +86,7 @@ public class SkipList {
          * Picks randoms level 
          * @return int for level
          */
-        public int randomLevel() 
+        private int randomLevel() 
         {
             int rndLevel = 0;
             while (rnd.nextBoolean() && rndLevel < HIGHEST_LEVEL)
@@ -97,11 +100,12 @@ public class SkipList {
          * @param name is the name inserted
          * @param object is the object inserted
          */
-        public void insert(String name, AirObject object)
+        @SuppressWarnings("unchecked")
+        public void insert(K name, V object)
         {
-            SkipNode[] update = new SkipNode[HIGHEST_LEVEL + 1];
+            SkipNode<K, V>[] update = (SkipNode<K, V>[])new SkipNode[HIGHEST_LEVEL + 1];
             //Start from the head
-            SkipNode start = head;
+            SkipNode<K, V> start = head;
             //Start comparing from the highest level 
             for (int i = level; i >= 0; i--)
             {
@@ -116,7 +120,7 @@ public class SkipList {
             //Move to it if exists
             start = start.forward[0];
             //If found and names match replace
-            if (start != null && start.key.equals(name))
+            if (start != null && start.key.compareTo(name) == 0)
             {
                 start.value = object;
                 return;
@@ -130,7 +134,7 @@ public class SkipList {
                 }
                 level = rndLevel;
             }
-            start = new SkipNode(name, object, rndLevel);
+            start = new SkipNode<>(name, object, rndLevel);
             //Splice into list for every level
             for (int i = 0; i <= rndLevel; i++)
             {
@@ -143,11 +147,12 @@ public class SkipList {
          * @param name is the name being removed
          * @return true or false if remove successful or not
          */
-        public boolean remove(String name)
+        @SuppressWarnings("unchecked")
+        public boolean remove(K name)
         {
-            SkipNode[] update = new SkipNode[HIGHEST_LEVEL + 1];
+            SkipNode<K, V>[] update = (SkipNode<K, V>[])new SkipNode[HIGHEST_LEVEL + 1];
             //Start from the head
-            SkipNode start = head;
+            SkipNode<K, V> start = head;
             //Start comparing from the highest level 
             for (int i = level; i >= 0; i--)
             {
@@ -161,7 +166,7 @@ public class SkipList {
             }
             //Move to it if exists
             start = start.forward[0];
-            if (start == null || !start.key.equals(name))
+            if (start == null || start.key.compareTo(name) != 0)
             {
                 return false;
             }
@@ -195,11 +200,11 @@ public class SkipList {
             }
             StringBuilder sb = new StringBuilder();
             sb.append("Node has depth ").append(level).append(", Value (null)\r\n");
-            SkipNode start = head.forward[0];
+            SkipNode<K, V> start = head.forward[0];
             int count = 0;
             //This prints everything
             while (start != null)
-            {
+            { 
                 int depth = start.forward.length - 1;
                 sb.append("Node has depth ").append(depth);
                 sb.append(", Value (").append(start.value.toString());
@@ -216,13 +221,13 @@ public class SkipList {
          * @param end is the end
          * @return String for range
          */
-        public String range(String begin, String end)
+        public String range(K begin, K end)
         {
             StringBuilder sb = new StringBuilder();
             sb.append("Found these records in the range ");
             sb.append(begin).append(" to ").append(end);
             sb.append("\r\n");
-            SkipNode start = head.forward[0];
+            SkipNode<K, V> start = head.forward[0];
             while (start != null)
             {
                 if (start.key.compareTo(begin) >= 0 &&
