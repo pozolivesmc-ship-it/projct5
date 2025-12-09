@@ -175,17 +175,7 @@ public class Bintree {
         }
         public BinNode insert(AirObject obj, int x, int y, int z, int w, int h, int d, int depth)
         {
-            int midpointX = x + w / 2;
-            int objectX = obj.getXorig();
-            
-            if (objectX < midpointX)
-            {
-                left = left.insert(obj, x, y, z, w / 2, h, d, depth + 1);
-            }
-            else
-            {
-                right = right.insert(obj, x, y, z, w / 2, h, d, depth + 1);
-            }
+            //Finish this
             return this;
         }
     }
