@@ -100,7 +100,18 @@ public class Bintree {
         
         public void addObject(AirObject obj)
         {
-            //Finish this
+            if (size >= LEAF_MAX)
+            {
+                return;
+            }
+            int i = size - 1;
+            while (i >= 0 && objects[i].compareTo(obj) > 0)
+            {
+                objects[i + 1] = objects[i];
+                i--;
+            }
+            objects[i + 1] = obj;
+            size++;
         }
         public void print(StringBuilder sb, int x, int y, int z, int w, int h, int d, int depth)
         {
@@ -121,8 +132,21 @@ public class Bintree {
         }
         public BinNode insert(AirObject obj, int x, int y, int z, int w, int h, int d, int depth)
         {
-            //Finish code
-            return this;
+            //If not full addObject and return
+            if (size < LEAF_MAX)
+            {
+                addObject(obj);
+                return this;
+            }
+            //Leaf is full so split
+            InternalNode internal = new InternalNode();
+            //Insert each object into internal node and insert new
+            for (int i = 0; i < size; i++)
+            {
+                internal.insert(objects[i], x, y, z, w, h, d, depth);
+            }
+            internal.insert(obj, x, y, z, w, h, d, depth);
+            return internal;
         }
     }
     /**
@@ -151,7 +175,17 @@ public class Bintree {
         }
         public BinNode insert(AirObject obj, int x, int y, int z, int w, int h, int d, int depth)
         {
-            //Finish this
+            int midpointX = x + w / 2;
+            int objectX = obj.getXorig();
+            
+            if (objectX < midpointX)
+            {
+                left = left.insert(obj, x, y, z, w / 2, h, d, depth + 1);
+            }
+            else
+            {
+                right = right.insert(obj, x, y, z, w / 2, h, d, depth + 1);
+            }
             return this;
         }
     }
