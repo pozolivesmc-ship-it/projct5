@@ -168,7 +168,7 @@ public class WorldDB implements ATC {
      * @return String listing the AirObjects that participate in collisions.
      */
     public String collisions() {
-        return "The following collisions exist in the database:\n";
+        return bintree.collisions();
     }
 
 
