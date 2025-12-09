@@ -54,6 +54,16 @@ public class Bintree {
             sb.append("  ");
         }
     }
+    public String intersect(int x, int y, int z, int xwid, int ywid, int zwid)
+    {
+        StringBuilder sb = new StringBuilder();
+        //sb.append("The following objects intersect (");
+        //sb.append(x).append(", ").append(y).append(", ").append(z).append(", ");
+        //sb.append(xwid).append(", ").append(ywid).append(", ").append(zwid).append(")\n");
+        //int[] visited = new int[1];
+        //root.intersect();
+        return sb.toString();
+    }
     /**
      * This is the interface for BinNode 
      */
