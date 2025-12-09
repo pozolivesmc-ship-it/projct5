@@ -1,12 +1,14 @@
 /**
  * This is the AirPlane class 
  * @author {Giovanni Garcia}
- * @version {12.4.2025}
+ * @version {12.9.2025}
  */
 public class AirPlane extends AirObject {
-
+    //Carrier name
     private String carrier;
+    //Flight number
     private int flight;
+    //Engine number
     private int engines;
     
     /**

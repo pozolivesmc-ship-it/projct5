@@ -1,15 +1,19 @@
 import java.util.Random;
 
 /**
- * The world for this project. We have a Skip List and a Bintree
+ * The world for this project. We have a Skip List and a Bintree.
  *
  * @author {Giovanni Garcia}
- * @version {12.4.2025}
+ * @version {12.9.2025}
  */
 public class WorldDB implements ATC {
+    //Size of the world
     private final int worldSize = 1024;
+    //Random number for SkipList level 
     private Random rnd;
+    //SkipList that stores AirObjects by name 
     private SkipList<String, AirObject> skiplist;
+    //Bintree variable
     private Bintree bintree;
     
 

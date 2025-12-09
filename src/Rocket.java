@@ -2,11 +2,12 @@
 /**
  * This is the Rocket class 
  * @author {Giovanni Garcia}
- * @version {12.4.2025}
+ * @version {12.9.2025}
  */
 public class Rocket extends AirObject {
-
+    //Number for ascent rate
     private int ascentRate;
+    //Launch trajectory 
     private double trajectory;
     /**
      * This is the Rocket class constructor

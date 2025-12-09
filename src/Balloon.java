@@ -1,11 +1,12 @@
 /**
  * This is the Balloon class 
  * @author {Giovanni Garcia}
- * @version {12.4.2025}
+ * @version {12.9.2025}
  */
 public class Balloon extends AirObject {
-    
+    //Name of balloon
     private String type;
+    //Number for ascent rate
     private int ascentRate;
     
     /**

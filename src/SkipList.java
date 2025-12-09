@@ -3,15 +3,19 @@ import java.util.Random;
 /**
  * This is the SkipList class 
  * @author {Giovanni Garcia}
- * @version {12.4.2025}
+ * @version {12.9.2025}
  * @param <K> is for key (String)
  * @param <V> is for value (AirObject)
  */
 public class SkipList<K extends Comparable<K>, V> {
 
+    //Highest level for skip list
     private static final int HIGHEST_LEVEL = 16;
+    //Head node 
     private SkipNode<K, V> head;
+    //Current highest level
     private int level;
+    //Random number for level 
     private Random rnd;
 
     /**

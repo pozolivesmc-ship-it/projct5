@@ -1,11 +1,12 @@
 /**
  * This is the Bird class 
  * @author {Giovanni Garcia}
- * @version {12.4.2025}
+ * @version {12.9.2025}
  */
 public class Bird extends AirObject {
-
+    //Name of bird
     private String type;
+    //Number for bird
     private int number;
     /**
      * This is the Bird class constructor

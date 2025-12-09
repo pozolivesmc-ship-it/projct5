@@ -2,11 +2,12 @@
 /**
  * This is the Drone class 
  * @author {Giovanni Garcia}
- * @version {12.4.2025}
+ * @version {12.9.2025}
  */
 public class Drone extends AirObject {
-
+    //Name of drone
     private String brand;
+    //Number for engine
     private int engines;
     /**
      * This is the Drone class constructor

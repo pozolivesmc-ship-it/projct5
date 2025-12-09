@@ -3,17 +3,20 @@
  * This is the AirObject class that will be used for 
  * AirPlane, Balloon, Bird, Drone, and Rocket 
  * @author {Giovanni Garcia}
- * @version {12.4.2025}
+ * @version {12.9.2025}
  */
 public abstract class AirObject implements Comparable<AirObject> {
-
+    //Size of the world
     private static final int WORLD_SIZE = 1024;
+    //x, y, and z bounds
     private int x;
     private int y;
     private int z;
+    //x, y, and z bounds for the width
     private int xwid;
     private int ywid;
     private int zwid;
+    //Name of key in SkipList
     private String name;
     
     /**
