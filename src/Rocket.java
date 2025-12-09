@@ -44,6 +44,8 @@ public class Rocket extends AirObject {
      */
     public boolean isValid()
     {
+        //Check if core inputs are valid
+        //Or if any other inputs violate the bounds
         if (!super.isValid())
         {
             return false;

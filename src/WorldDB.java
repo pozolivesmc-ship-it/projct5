@@ -20,6 +20,7 @@ public class WorldDB implements ATC {
      */
     public WorldDB(Random r) {
         rnd = r;
+        //If null create new random object
         if (rnd == null) {
             rnd = new Random();
         }
@@ -31,6 +32,7 @@ public class WorldDB implements ATC {
      *
      */
     public void clear() {
+        //Resets SkipList and Bintree
         skiplist = new SkipList<>(rnd);
         bintree = new Bintree();
     }
@@ -58,7 +60,7 @@ public class WorldDB implements ATC {
         {
             return false;
         }
-        //Insert it and return true
+        //Insert it into both and return true
         skiplist.insert(a.getName(), a);
         bintree.insert(a);
         return true;
@@ -79,11 +81,13 @@ public class WorldDB implements ATC {
         {
             return null;
         }
+        //Find target 
         AirObject target = skiplist.find(name);
         if (target == null)
         {
             return null;
         }
+        //Remove from SkipList
         skiplist.remove(name);
         return target.toString();
     }
@@ -126,6 +130,7 @@ public class WorldDB implements ATC {
         {
             return null;
         }
+        //Find AirObject and return it
         AirObject airObject = skiplist.find(name);
         if (airObject == null)
         {
@@ -146,10 +151,12 @@ public class WorldDB implements ATC {
      *         Null if the parameters are bad
      */
     public String rangeprint(String start, String end) {
+        //Check if either are null
         if (start == null || end == null)
         {
             return null;
         }
+        //Check if invalid range
         if (start.compareTo(end) > 0)
         {
             return null;
@@ -189,7 +196,7 @@ public class WorldDB implements ATC {
      *         Return null if any input parameters are bad
      */
     public String intersect(int x, int y, int z, int xwid, int ywid, int zwid) {
-        //Ensure input is valid
+        //Check if input is valid
         if (x < 0 || y < 0 || z < 0 || x >= worldSize || y >= worldSize || z >= worldSize ||
             xwid <= 0 || ywid <= 0 || zwid <= 0 || 
             xwid + x > worldSize || ywid + y > worldSize || zwid + z > worldSize)

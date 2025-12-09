@@ -109,6 +109,8 @@ public abstract class AirObject implements Comparable<AirObject> {
      */
     public boolean isValid()
     {
+        //Check if name is null
+        //Or if any inputs violate the bounds
         if (name == null)
         { 
             return false;

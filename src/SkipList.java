@@ -38,10 +38,11 @@ public class SkipList<K extends Comparable<K>, V> {
     }
     /**
      * This is the SkipList class constructor 
-     * @param rnd is the random object
+     * @param rand is the random object
      */
     public SkipList(Random rand)
     {
+        //Check if null and create new random
         if (rand == null)
         {
             rnd = new Random();
@@ -88,6 +89,7 @@ public class SkipList<K extends Comparable<K>, V> {
      */
     private int randomLevel() 
     {
+        //Chooses random level between 0 and HIGHEST_LEVEL
         int rndLevel = 0;
         while (rnd.nextBoolean() && rndLevel < HIGHEST_LEVEL)
         {
@@ -103,10 +105,11 @@ public class SkipList<K extends Comparable<K>, V> {
     @SuppressWarnings("unchecked")
     public void insert(K name, V object)
     {
+        //Update array to keep track at each level
         SkipNode<K, V>[] update = (SkipNode<K, V>[])new SkipNode[HIGHEST_LEVEL + 1];
         //Start from the head
         SkipNode<K, V> start = head;
-        //Start comparing from the highest level 
+        //Start comparing from the highest level to level 0
         for (int i = level; i >= 0; i--)
         {
             while (start.forward[i] != null &&
@@ -125,13 +128,17 @@ public class SkipList<K extends Comparable<K>, V> {
             start.value = object;
             return;
         }
+        //If not create node at random level
         int rndLevel = randomLevel();
+        //Checks if the node level is higher
         if (rndLevel > level)
         {
+            //Updates each new level 
             for (int i = level + 1; i <= rndLevel; i++)
             {
                 update[i] = head;
             }
+            //Updates level  
             level = rndLevel;
         }
         start = new SkipNode<>(name, object, rndLevel);
@@ -197,7 +204,7 @@ public class SkipList<K extends Comparable<K>, V> {
         sb.append("Node has depth ").append(level).append(", Value (null)\r\n");
         SkipNode<K, V> start = head.forward[0];
         int count = 0;
-        //This prints everything
+        //This starts at level 0 and prints each node
         while (start != null)
         { 
             int depth = start.forward.length - 1;
@@ -223,6 +230,7 @@ public class SkipList<K extends Comparable<K>, V> {
         sb.append(begin).append(" to ").append(end);
         sb.append("\r\n");
         SkipNode<K, V> start = head.forward[0];
+        //Goes through and prints only the keys between begin and end
         while (start != null)
         {
             if (start.key.compareTo(begin) >= 0 &&
