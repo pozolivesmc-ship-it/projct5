@@ -143,9 +143,16 @@ public class AirControlTest extends TestCase {
         assertFalse(w.add(new Balloon("b", 1, 1, 1, 1, 1, 1, "hot", -1)));
         assertFalse(w.add(new Bird("b", 1, 1, 1, 1, 1, 1, null, 5)));
         assertFalse(w.add(new Bird("b", 1, 1, 1, 1, 1, 1, "Ostrich", 0)));
+        assertFalse(w.add(new Bird("b", -1, 1, 1, 1, 1, 1, "Ostrich", 0)));
+        assertFalse(w.add(new Bird("b", 1, 1, 1, 0, 1, 1, "Ostrich", 0)));
         assertFalse(w.add(new Drone("d", 1, 1, 1, 1, 1, 1, null, 5)));
         assertFalse(w.add(new Drone("d", 1, 1, 1, 1, 1, 1, "Droner", 0)));
+        assertFalse(w.add(new Drone("d", -1, 1, 1, 1, 1, 1, "Droner", 0)));
+        assertFalse(w.add(new Drone("d", 1, 1, 1, 2000, 1, 1, "Droner", 0)));
+        assertFalse(w.add(new Rocket("r", -1, 1, 1, 1, 1, 1, 1, 1.1)));
+        assertFalse(w.add(new Rocket("r", -1, 1, 1, 1, 1, 1, 1, 1.1)));
         assertFalse(w.add(new Rocket("r", 1, 1, 1, 1, 1, 1, -1, 1.1)));
+        assertFalse(w.add(new Rocket("r", 1, 1, 1, 2000, 1, 1, 1, -1.1)));
         assertFalse(w.add(new Rocket("r", 1, 1, 1, 1, 1, 1, 1, -1.1)));
         assertFalse(w.add(
             new AirPlane("a", 2000, 1, 1, 1, 1, 1, "Alaska", 1, 1)));
