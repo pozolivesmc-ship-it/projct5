@@ -8,7 +8,7 @@ public class Bintree {
     
     private BinNode root;
     private static final EmptyNode FLYWEIGHT = new EmptyNode();
-    private static final int LEAF_MAX = 4;
+    private static final int LEAF_MAX = 3;
     private static final int X = 0;
     private static final int Y = 0;
     private static final int Z = 0;
