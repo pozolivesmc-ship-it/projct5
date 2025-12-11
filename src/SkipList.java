@@ -10,7 +10,7 @@ import java.util.Random;
 public class SkipList<K extends Comparable<K>, V> {
 
     //Highest level for skip list
-    private static final int HIGHEST_LEVEL = 16;
+    private static final int HIGHEST_LEVEL = 3;
     //Head node 
     private SkipNode<K, V> head;
     //Current highest level
@@ -93,13 +93,11 @@ public class SkipList<K extends Comparable<K>, V> {
      */
     private int randomLevel() 
     {
-        //Chooses random level between 0 and HIGHEST_LEVEL
-        int rndLevel = 0;
-        while (rnd.nextBoolean() && rndLevel < HIGHEST_LEVEL)
-        {
-            rndLevel++;
+        int level;
+        for (level = 0; Math.abs(rnd.nextInt()) % 2 == 0; level++) { 
+          ; // Do nothing
         }
-        return rndLevel;
+        return level;
     }
     /**
      * This is the insert method
@@ -205,13 +203,13 @@ public class SkipList<K extends Comparable<K>, V> {
             return "SkipList is empty";
         }
         StringBuilder sb = new StringBuilder();
-        sb.append("Node has depth ").append(level).append(", Value (null)\r\n");
+        sb.append("Node has depth ").append(HIGHEST_LEVEL).append(", Value (null)\r\n");
         SkipNode<K, V> start = head.forward[0];
         int count = 0;
         //This starts at level 0 and prints each node
         while (start != null)
         { 
-            int depth = start.forward.length - 1;
+            int depth = start.forward.length;
             sb.append("Node has depth ").append(depth);
             sb.append(", Value (").append(start.value.toString());
             sb.append(")\r\n");

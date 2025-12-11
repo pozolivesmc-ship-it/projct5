@@ -2,19 +2,15 @@
 /**
  * This is the Bintree class 
  * @author {Giovanni Garcia}
- * @version {12.4.2025}
+ * @version {12.10.2025}
  */
 public class Bintree {
     
     private BinNode root;
     private static final EmptyNode FLYWEIGHT = new EmptyNode();
     private static final int LEAF_MAX = 3;
-    private static final int X = 0;
-    private static final int Y = 0;
-    private static final int Z = 0;
-    private static final int WIDTH = 1024;
-    private static final int HEIGHT = 1024;
-    private static final int DEPTH = 1024;
+    private static final int WORLD_SIZE = 1024;
+    private int visited;
     
     /**
      * This is the constructor for Bintree
@@ -34,7 +30,7 @@ public class Bintree {
         {
             return;
         }
-        root = root.insert(obj, X, Y, Z, WIDTH, HEIGHT, DEPTH, 0);
+        root = root.insert(obj, 0, 0, 0, WORLD_SIZE, WORLD_SIZE, WORLD_SIZE, 0);
     }
     /**
      * This is the printTree method
@@ -43,7 +39,7 @@ public class Bintree {
     public String printTree() 
     {
         StringBuilder sb = new StringBuilder();
-        root.print(sb, X, Y, Z, WIDTH, HEIGHT, DEPTH, 0);
+        root.print(sb, 0, 0, 0, WORLD_SIZE, WORLD_SIZE, WORLD_SIZE, 0);
         sb.append(root.countNodes()).append(" Bintree nodes printed\r\n");
         return sb.toString();
     }
@@ -56,13 +52,40 @@ public class Bintree {
     }
     public String intersect(int x, int y, int z, int xwid, int ywid, int zwid)
     {
+        visited = 0;
         StringBuilder sb = new StringBuilder();
-        //sb.append("The following objects intersect (");
-        //sb.append(x).append(", ").append(y).append(", ").append(z).append(", ");
-        //sb.append(xwid).append(", ").append(ywid).append(", ").append(zwid).append(")\n");
-        //int[] visited = new int[1];
-        //root.intersect();
+        sb.append("The following objects intersect (");
+        sb.append(x).append(", ").append(y).append(", ").append(z).append(", ");
+        sb.append(xwid).append(", ").append(ywid).append(" ").append(zwid).append("):\r\n");
+        if (root == FLYWEIGHT)
+        {
+            visited = 1;
+        }
+        else
+        {
+            root.intersect(sb, x, y, z, xwid, ywid, zwid,0, 0, 0, WORLD_SIZE, WORLD_SIZE, WORLD_SIZE, 0, visited);
+        }
+        sb.append(visited).append(" nodes were visited in the bintree\r\n");
         return sb.toString();
+    }
+    public String collisions()
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.append("The following collisions exist in the database:\r\n");
+        root.collisions(sb, 0, 0, 0, WORLD_SIZE, WORLD_SIZE, WORLD_SIZE, 0);
+        return sb.toString();
+    }
+    /**
+     * This is a helper method testing if there's any overlapping
+     * @return true or false if it overlaps
+     */
+    private boolean overlap(int x1, int y1, int z1, int w1, int h1, int d1,
+                            int x2, int y2, int z2, int w2, int h2, int d2)
+    {
+        boolean xOverlap = x1 < x2 + w2 && x2 < x1 + w1;
+        boolean yOverlap = y1 < y2 + h2 && y2 < y1 + h1;
+        boolean zOverlap = z1 < z2 + d2 && z2 < z1 + d1;
+        return xOverlap && yOverlap && zOverlap;
     }
     /**
      * This is the interface for BinNode 
@@ -72,6 +95,9 @@ public class Bintree {
         void print(StringBuilder sb, int x, int y, int z, int w, int h, int d, int depth);
         int countNodes();
         BinNode insert(AirObject obj, int x, int y, int z, int w, int h, int d, int depth);
+        void intersect(StringBuilder sb, int x1, int y1, int z1, int w1, int h1, int d1,
+                       int x2, int y2, int z2, int w2, int h2, int d2, int depth, int visited);
+        void collisions(StringBuilder sb, int x, int y, int z, int w, int h, int d, int depth);
     }
     
     /**
@@ -94,6 +120,15 @@ public class Bintree {
             LeafNode leaf = new LeafNode();
             leaf.addObject(obj);
             return leaf;
+        }
+        public void intersect(StringBuilder sb, int x1, int y1, int z1, int w1, int h1, int d1,
+            int x2, int y2, int z2, int w2, int h2, int d2, int depth, int visited)
+        {
+            return;
+        }
+        public void collisions(StringBuilder sb, int x, int y, int z, int w, int h, int d, int depth)
+        {
+            return;
         }
     }
     /**
@@ -158,6 +193,15 @@ public class Bintree {
             internal.insert(obj, x, y, z, w, h, d, depth);
             return internal;
         }
+        public void intersect(StringBuilder sb, int x1, int y1, int z1, int w1, int h1, int d1,
+            int x2, int y2, int z2, int w2, int h2, int d2, int depth, int visited)
+        {
+            //Finish
+        }
+        public void collisions(StringBuilder sb, int x, int y, int z, int w, int h, int d, int depth)
+        {
+            //Finish
+        }
     }
     /**
      * This is the InternalNode class
@@ -177,7 +221,27 @@ public class Bintree {
             sb.append(x).append(", ").append(y).append(", ");
             sb.append(z).append(", ").append(w).append(", ").append(h).append(", ");
             sb.append(d).append(") ").append(depth).append("\r\n");
-            //Finish this
+            
+            int split = depth % 3;
+            //X split then y split then z split
+            if (split == 0)
+            {
+                int half = w / 2;
+                left.print(sb, x, y, z, half, h, d, depth + 1);
+                right.print(sb, x + half, y, z, w - half, h, d, depth + 1);
+            }
+            else if (split == 1)
+            {
+                int half = h / 2;
+                left.print(sb, x, y, z, w, half, d, depth + 1);
+                right.print(sb, x, y + half, z, w, h - half, d, depth + 1);
+            }
+            else
+            {
+                int half = d / 2;
+                left.print(sb, x, y, z, w, h, half, depth + 1);
+                right.print(sb, x, y, z + half, w, h, d - half, depth + 1);
+            }
         }
         public int countNodes()
         {
@@ -187,6 +251,34 @@ public class Bintree {
         {
             //Finish this
             return this;
+        }
+        public void intersect(StringBuilder sb, int x1, int y1, int z1, int w1, int h1, int d1,
+                             int x2, int y2, int z2, int w2, int h2, int d2, int depth, int visited)
+        {
+            //Finish
+        }
+        public void collisions(StringBuilder sb, int x, int y, int z, int w, int h, int d, int depth)
+        {
+            int split = depth % 3;
+            //X split then y split then z split
+            if (split == 0)
+            {
+                int half = w / 2;
+                left.collisions(sb, x, y, z, half, h, d, depth + 1);
+                right.collisions(sb, x + half, y, z, w - half, h, d, depth + 1);
+            }
+            else if (split == 1)
+            {
+                int half = h / 2;
+                left.collisions(sb, x, y, z, w, half, d, depth + 1);
+                right.collisions(sb, x, y + half, z, w, h - half, d, depth + 1);
+            }
+            else
+            {
+                int half = d / 2;
+                left.collisions(sb, x, y, z, w, h, half, depth + 1);
+                right.collisions(sb, x, y, z + half, w, h, d - half, depth + 1);
+            }
         }
     }
 }    
