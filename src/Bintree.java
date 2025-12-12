@@ -1,4 +1,3 @@
-
 /**
  * This is the Bintree class 
  * @author {Giovanni Garcia}
