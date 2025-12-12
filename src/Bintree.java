@@ -11,6 +11,27 @@ public class Bintree {
     private static final int LEAF_MAX = 3;
     private static final int WORLD_SIZE = 1024;
     private int visited;
+
+    /**
+     * Helper to check if a name has already been collected in the intersect
+     * traversal without relying on disallowed collection types.
+     *
+     * @param names array of names already recorded
+     * @param count number of occupied entries in {@code names}
+     * @param target the name to search for
+     * @return {@code true} if {@code target} is present in {@code names}
+     */
+    private static boolean hasName(String[] names, int count, String target)
+    {
+        for (int i = 0; i < count; i++)
+        {
+            if (names[i].equals(target))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
     
     /**
      * This is the constructor for Bintree
@@ -57,13 +78,23 @@ public class Bintree {
         sb.append("The following objects intersect (");
         sb.append(x).append(", ").append(y).append(", ").append(z).append(", ");
         sb.append(xwid).append(", ").append(ywid).append(" ").append(zwid).append("):\r\n");
+
+        // Track the names added during traversal without using collections that are
+        // disallowed in the environment.
+        String[] intersectedNames = new String[WORLD_SIZE];
+        int[] nameCount = { 0 };
+
         if (root == FLYWEIGHT)
         {
             visited = 1;
         }
         else
         {
-            root.intersect(sb, x, y, z, xwid, ywid, zwid,0, 0, 0, WORLD_SIZE, WORLD_SIZE, WORLD_SIZE, 0, visited);
+            int[] visitedCount = { 0 };
+            root.intersect(sb, x, y, z, xwid, ywid, zwid, 0, 0, 0,
+                WORLD_SIZE, WORLD_SIZE, WORLD_SIZE, 0, visitedCount,
+                intersectedNames, nameCount);
+            visited = visitedCount[0];
         }
         sb.append(visited).append(" nodes were visited in the bintree\r\n");
         return sb.toString();
@@ -96,7 +127,8 @@ public class Bintree {
         int countNodes();
         BinNode insert(AirObject obj, int x, int y, int z, int w, int h, int d, int depth);
         void intersect(StringBuilder sb, int x1, int y1, int z1, int w1, int h1, int d1,
-                       int x2, int y2, int z2, int w2, int h2, int d2, int depth, int visited);
+                       int x2, int y2, int z2, int w2, int h2, int d2, int depth,
+                       int[] visited, String[] names, int[] nameCount);
         void collisions(StringBuilder sb, int x, int y, int z, int w, int h, int d, int depth);
     }
     
@@ -122,7 +154,8 @@ public class Bintree {
             return leaf;
         }
         public void intersect(StringBuilder sb, int x1, int y1, int z1, int w1, int h1, int d1,
-            int x2, int y2, int z2, int w2, int h2, int d2, int depth, int visited)
+            int x2, int y2, int z2, int w2, int h2, int d2, int depth,
+            int[] visited, String[] names, int[] nameCount)
         {
             return;
         }
@@ -194,9 +227,37 @@ public class Bintree {
             return internal;
         }
         public void intersect(StringBuilder sb, int x1, int y1, int z1, int w1, int h1, int d1,
-            int x2, int y2, int z2, int w2, int h2, int d2, int depth, int visited)
+            int x2, int y2, int z2, int w2, int h2, int d2, int depth,
+            int[] visited, String[] names, int[] nameCount)
         {
-            //Finish
+            visited[0]++;
+            if (!overlap(x1, y1, z1, w1, h1, d1, x2, y2, z2, w2, h2, d2))
+            {
+                return;
+            }
+
+            spacing(sb, depth);
+            sb.append("In leaf node (").append(x2).append(", ").append(y2)
+                .append(", ").append(z2).append(", ").append(w2).append(", ")
+                .append(h2).append(", ").append(d2).append(") ")
+                .append(depth).append("\r\n");
+
+            for (int i = 0; i < size; i++)
+            {
+                AirObject obj = objects[i];
+                if (overlap(x1, y1, z1, w1, h1, d1, obj.getXorig(),
+                    obj.getYorig(), obj.getZorig(), obj.getXwidth(),
+                    obj.getYwidth(), obj.getZwidth()))
+                {
+                    if (!hasName(names, nameCount[0], obj.getName()))
+                    {
+                        names[nameCount[0]] = obj.getName();
+                        nameCount[0]++;
+                        spacing(sb, depth + 1);
+                        sb.append(obj.toString()).append("\r\n");
+                    }
+                }
+            }
         }
         public void collisions(StringBuilder sb, int x, int y, int z, int w, int h, int d, int depth)
         {
@@ -253,7 +314,8 @@ public class Bintree {
             return this;
         }
         public void intersect(StringBuilder sb, int x1, int y1, int z1, int w1, int h1, int d1,
-                             int x2, int y2, int z2, int w2, int h2, int d2, int depth, int visited)
+                             int x2, int y2, int z2, int w2, int h2, int d2, int depth,
+                             int[] visited, String[] names, int[] nameCount)
         {
             //Finish
         }
