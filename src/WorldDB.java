@@ -95,9 +95,10 @@ public class WorldDB implements ATC {
         skiplist.remove(name);
         //Rebuild the bintree without the removed object
         bintree = new Bintree();
-        for (AirObject obj : skiplist.values())
+        Object[] remaining = skiplist.values();
+        for (int i = 0; i < remaining.length; i++)
         {
-            bintree.insert(obj);
+            bintree.insert((AirObject)remaining[i]);
         }
         return target.toString();
     }
