@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.Random;
 
 /**
@@ -243,5 +244,21 @@ public class SkipList<K extends Comparable<K>, V> {
             start = start.forward[0];
         }
         return sb.toString();
+    }
+
+    /**
+     * This returns all values stored in the list in level 0 order.
+     * @return ArrayList of values
+     */
+    public ArrayList<V> values()
+    {
+        ArrayList<V> list = new ArrayList<>();
+        SkipNode<K, V> start = head.forward[0];
+        while (start != null)
+        {
+            list.add(start.value);
+            start = start.forward[0];
+        }
+        return list;
     }
 }

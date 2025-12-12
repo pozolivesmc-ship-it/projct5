@@ -85,7 +85,7 @@ public class WorldDB implements ATC {
         {
             return null;
         }
-        //Find target 
+        //Find target
         AirObject target = skiplist.find(name);
         if (target == null)
         {
@@ -93,6 +93,12 @@ public class WorldDB implements ATC {
         }
         //Remove from SkipList
         skiplist.remove(name);
+        //Rebuild the bintree without the removed object
+        bintree = new Bintree();
+        for (AirObject obj : skiplist.values())
+        {
+            bintree.insert(obj);
+        }
         return target.toString();
     }
     
