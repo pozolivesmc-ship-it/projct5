@@ -91,13 +91,48 @@ public class SkipList<K extends Comparable<K>, V> {
      * Picks randoms level 
      * @return int for level
      */
-    private int randomLevel() 
+    private int randomLevel()
     {
         int level;
-        for (level = 0; Math.abs(rnd.nextInt()) % 2 == 0; level++) { 
+        for (level = 0; Math.abs(rnd.nextInt()) % 2 == 0; level++) {
           ; // Do nothing
         }
         return level;
+    }
+
+    /**
+     * Return all values stored in the skip list in sorted order of their keys.
+     * This implementation avoids collection classes by first counting the
+     * elements and then copying them into a freshly allocated array.
+     *
+     * @return An array containing the values in the skip list.
+     */
+    @SuppressWarnings("unchecked")
+    public V[] values()
+    {
+        // First pass: count elements
+        int count = 0;
+        SkipNode<K, V> current = head.forward[0];
+        while (current != null)
+        {
+            count++;
+            current = current.forward[0];
+        }
+
+        // Allocate array based on count
+        V[] result = (V[])new Object[count];
+
+        // Second pass: populate array
+        current = head.forward[0];
+        int index = 0;
+        while (current != null)
+        {
+            result[index] = current.value;
+            index++;
+            current = current.forward[0];
+        }
+
+        return result;
     }
     /**
      * This is the insert method
