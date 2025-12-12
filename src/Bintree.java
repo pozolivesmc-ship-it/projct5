@@ -213,6 +213,12 @@ public class Bintree {
             sb.append("In leaf node (").append(x1).append(", ").append(y1).append(", ");
             sb.append(z1).append(", ").append(w1).append(", ").append(h1).append(", ");
             sb.append(d1).append(") ").append(depth).append("\r\n");
+            boolean originInside = x2 >= x1 && x2 < x1 + w1 && y2 >= y1 && y2 < y1 + h1
+                && z2 >= z1 && z2 < z1 + d1;
+            if (!originInside)
+            {
+                return 1;
+            }
             for (int i = 0; i < size; i++)
             {
                 int ox = objects[i].getXorig();
@@ -268,14 +274,14 @@ public class Bintree {
 
         private boolean commonIntersection(AirObject obj)
         {
-            int maxX = objects[0].getXorig();
-            int maxY = objects[0].getYorig();
-            int maxZ = objects[0].getZorig();
-            int minX = objects[0].getXorig() + objects[0].getXwidth();
-            int minY = objects[0].getYorig() + objects[0].getYwidth();
-            int minZ = objects[0].getZorig() + objects[0].getZwidth();
+            int maxX = Integer.MIN_VALUE;
+            int maxY = Integer.MIN_VALUE;
+            int maxZ = Integer.MIN_VALUE;
+            int minX = Integer.MAX_VALUE;
+            int minY = Integer.MAX_VALUE;
+            int minZ = Integer.MAX_VALUE;
 
-            for (int i = 1; i < size; i++)
+            for (int i = 0; i < size; i++)
             {
                 maxX = Math.max(maxX, objects[i].getXorig());
                 maxY = Math.max(maxY, objects[i].getYorig());
