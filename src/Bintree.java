@@ -10,7 +10,7 @@ public class Bintree {
     private static final EmptyNode FLYWEIGHT = new EmptyNode();
     private static final int LEAF_MAX = 3;
     private static final int WORLD_SIZE = 1024;
-    private int visited;
+    private static int visited;
     
     /**
      * This is the constructor for Bintree
@@ -183,24 +183,118 @@ public class Bintree {
                 addObject(obj);
                 return this;
             }
+            AirObject[] temp = new AirObject[size + 1];
+            int i = size - 1;
+            while (i >= 0 && objects[i].compareTo(obj) > 0)
+            {
+                temp[i + 1] = objects[i];
+                i--;
+            }
+            temp[i + 1] = obj;
+            while (i >= 0)
+            {
+                temp[i] = objects[i];
+                i--;
+            }
+            boolean allIntersect = true;
+            for (int a = 0; a < temp.length && allIntersect; a++)
+            {
+                for (int b = a + 1; b < temp.length; b++)
+                {
+                    if (!overlap(temp[a].getXorig(), temp[a].getYorig(), temp[a].getZorig(),
+                        temp[a].getXwidth(), temp[a].getYwidth(), temp[a].getZwidth(),
+                        temp[b].getXorig(), temp[b].getYorig(), temp[b].getZorig(),
+                        temp[b].getXwidth(), temp[b].getYwidth(), temp[b].getZwidth()))
+                    {
+                        allIntersect = false;
+                        break;
+                    }
+                }
+            }
+            if (allIntersect)
+            {
+                objects = temp;
+                size++;
+                return this;
+            }
             //Leaf is full so split
             InternalNode internal = new InternalNode();
-            //Insert each object into internal node and insert new
-            for (int i = 0; i < size; i++)
+            for (int a = 0; a < temp.length; a++)
             {
-                internal.insert(objects[i], x, y, z, w, h, d, depth);
+                internal.insert(temp[a], x, y, z, w, h, d, depth);
             }
-            internal.insert(obj, x, y, z, w, h, d, depth);
             return internal;
         }
         public void intersect(StringBuilder sb, int x1, int y1, int z1, int w1, int h1, int d1,
             int x2, int y2, int z2, int w2, int h2, int d2, int depth, int visited)
         {
-            //Finish
+            Bintree.visited++;
+            if (!overlap(x1, y1, z1, w1, h1, d1, x2, y2, z2, w2, h2, d2))
+            {
+                return;
+            }
+            sb.append("In leaf node (").append(x2).append(", ").append(y2).append(", ")
+              .append(z2).append(", ").append(w2).append(", ").append(h2).append(", ")
+              .append(d2).append(") ").append(depth).append("\r\n");
+            for (int i = 0; i < size; i++)
+            {
+                AirObject obj = objects[i];
+                if (overlap(obj.getXorig(), obj.getYorig(), obj.getZorig(),
+                    obj.getXwidth(), obj.getYwidth(), obj.getZwidth(),
+                    x1, y1, z1, w1, h1, d1))
+                {
+                    int interX = Math.max(obj.getXorig(), x1);
+                    int interY = Math.max(obj.getYorig(), y1);
+                    int interZ = Math.max(obj.getZorig(), z1);
+                    if (interX >= x2 && interX < x2 + w2 && interY >= y2
+                        && interY < y2 + h2 && interZ >= z2 && interZ < z2 + d2)
+                    {
+                        sb.append(obj.toString()).append("\r\n");
+                    }
+                }
+            }
         }
         public void collisions(StringBuilder sb, int x, int y, int z, int w, int h, int d, int depth)
         {
-            //Finish
+            sb.append("In leaf node (").append(x).append(", ").append(y).append(", ")
+                .append(z).append(", ").append(w).append(", ").append(h).append(", ")
+                .append(d).append(") ").append(depth).append("\r\n");
+            if (size < 2)
+            {
+                return;
+            }
+            for (int i = 0; i < size; i++)
+            {
+                AirObject first = objects[i];
+                for (int j = i + 1; j < size; j++)
+                {
+                    AirObject second = objects[j];
+                    if (overlap(first.getXorig(), first.getYorig(), first.getZorig(),
+                        first.getXwidth(), first.getYwidth(), first.getZwidth(),
+                        second.getXorig(), second.getYorig(), second.getZorig(),
+                        second.getXwidth(), second.getYwidth(), second.getZwidth()))
+                    {
+                        int interX = Math.max(first.getXorig(), second.getXorig());
+                        int interY = Math.max(first.getYorig(), second.getYorig());
+                        int interZ = Math.max(first.getZorig(), second.getZorig());
+                        if (interX >= x && interX < x + w && interY >= y && interY < y + h
+                            && interZ >= z && interZ < z + d)
+                        {
+                            sb.append("(").append(first.toString()).append(") and (")
+                                .append(second.toString()).append(")\r\n");
+                        }
+                    }
+                }
+            }
+        }
+
+        private boolean overlap(int x1, int y1, int z1, int w1, int h1, int d1,
+                                 int x2, int y2, int z2, int w2, int h2, int d2)
+        {
+            boolean xOverlap = x1 < x2 + w2 && x2 < x1 + w1;
+            boolean yOverlap = y1 < y2 + h2 && y2 < y1 + h1;
+            boolean zOverlap = z1 < z2 + d2 && z2 < z1 + d1;
+            return xOverlap && yOverlap && zOverlap;
         }
     }
     /**
@@ -249,13 +343,101 @@ public class Bintree {
         }
         public BinNode insert(AirObject obj, int x, int y, int z, int w, int h, int d, int depth)
         {
-            //Finish this
+            int split = depth % 3;
+            if (split == 0)
+            {
+                int half = w / 2;
+                if (overlap(obj.getXorig(), obj.getYorig(), obj.getZorig(),
+                    obj.getXwidth(), obj.getYwidth(), obj.getZwidth(), x, y, z, half, h, d))
+                {
+                    left = left.insert(obj, x, y, z, half, h, d, depth + 1);
+                }
+                if (overlap(obj.getXorig(), obj.getYorig(), obj.getZorig(),
+                    obj.getXwidth(), obj.getYwidth(), obj.getZwidth(),
+                    x + half, y, z, w - half, h, d))
+                {
+                    right = right.insert(obj, x + half, y, z, w - half, h, d, depth + 1);
+                }
+            }
+            else if (split == 1)
+            {
+                int half = h / 2;
+                if (overlap(obj.getXorig(), obj.getYorig(), obj.getZorig(),
+                    obj.getXwidth(), obj.getYwidth(), obj.getZwidth(), x, y, z, w, half, d))
+                {
+                    left = left.insert(obj, x, y, z, w, half, d, depth + 1);
+                }
+                if (overlap(obj.getXorig(), obj.getYorig(), obj.getZorig(),
+                    obj.getXwidth(), obj.getYwidth(), obj.getZwidth(), x, y + half, z, w, h - half, d))
+                {
+                    right = right.insert(obj, x, y + half, z, w, h - half, d, depth + 1);
+                }
+            }
+            else
+            {
+                int half = d / 2;
+                if (overlap(obj.getXorig(), obj.getYorig(), obj.getZorig(),
+                    obj.getXwidth(), obj.getYwidth(), obj.getZwidth(), x, y, z, w, h, half))
+                {
+                    left = left.insert(obj, x, y, z, w, h, half, depth + 1);
+                }
+                if (overlap(obj.getXorig(), obj.getYorig(), obj.getZorig(),
+                    obj.getXwidth(), obj.getYwidth(), obj.getZwidth(), x, y, z + half, w, h, d - half))
+                {
+                    right = right.insert(obj, x, y, z + half, w, h, d - half, depth + 1);
+                }
+            }
             return this;
         }
         public void intersect(StringBuilder sb, int x1, int y1, int z1, int w1, int h1, int d1,
                              int x2, int y2, int z2, int w2, int h2, int d2, int depth, int visited)
         {
-            //Finish
+            Bintree.visited++;
+            if (!overlap(x1, y1, z1, w1, h1, d1, x2, y2, z2, w2, h2, d2))
+            {
+                return;
+            }
+            sb.append("In Internal node (").append(x2).append(", ").append(y2).append(", ")
+                .append(z2).append(", ").append(w2).append(", ").append(h2).append(", ")
+                .append(d2).append(") ").append(depth).append("\r\n");
+
+            int split = depth % 3;
+            if (split == 0)
+            {
+                int half = w2 / 2;
+                if (overlap(x1, y1, z1, w1, h1, d1, x2, y2, z2, half, h2, d2))
+                {
+                    left.intersect(sb, x1, y1, z1, w1, h1, d1, x2, y2, z2, half, h2, d2, depth + 1, visited);
+                }
+                if (overlap(x1, y1, z1, w1, h1, d1, x2 + half, y2, z2, w2 - half, h2, d2))
+                {
+                    right.intersect(sb, x1, y1, z1, w1, h1, d1, x2 + half, y2, z2, w2 - half, h2, d2, depth + 1, visited);
+                }
+            }
+            else if (split == 1)
+            {
+                int half = h2 / 2;
+                if (overlap(x1, y1, z1, w1, h1, d1, x2, y2, z2, w2, half, d2))
+                {
+                    left.intersect(sb, x1, y1, z1, w1, h1, d1, x2, y2, z2, w2, half, d2, depth + 1, visited);
+                }
+                if (overlap(x1, y1, z1, w1, h1, d1, x2, y2 + half, z2, w2, h2 - half, d2))
+                {
+                    right.intersect(sb, x1, y1, z1, w1, h1, d1, x2, y2 + half, z2, w2, h2 - half, d2, depth + 1, visited);
+                }
+            }
+            else
+            {
+                int half = d2 / 2;
+                if (overlap(x1, y1, z1, w1, h1, d1, x2, y2, z2, w2, h2, half))
+                {
+                    left.intersect(sb, x1, y1, z1, w1, h1, d1, x2, y2, z2, w2, h2, half, depth + 1, visited);
+                }
+                if (overlap(x1, y1, z1, w1, h1, d1, x2, y2, z2 + half, w2, h2, d2 - half))
+                {
+                    right.intersect(sb, x1, y1, z1, w1, h1, d1, x2, y2, z2 + half, w2, h2, d2 - half, depth + 1, visited);
+                }
+            }
         }
         public void collisions(StringBuilder sb, int x, int y, int z, int w, int h, int d, int depth)
         {
@@ -280,5 +462,14 @@ public class Bintree {
                 right.collisions(sb, x, y, z + half, w, h, d - half, depth + 1);
             }
         }
+
+        private boolean overlap(int x1, int y1, int z1, int w1, int h1, int d1,
+                                 int x2, int y2, int z2, int w2, int h2, int d2)
+        {
+            boolean xOverlap = x1 < x2 + w2 && x2 < x1 + w1;
+            boolean yOverlap = y1 < y2 + h2 && y2 < y1 + h1;
+            boolean zOverlap = z1 < z2 + d2 && z2 < z1 + d1;
+            return xOverlap && yOverlap && zOverlap;
+        }
     }
-}    
+}
