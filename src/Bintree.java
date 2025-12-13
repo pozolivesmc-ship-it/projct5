@@ -63,7 +63,8 @@ public class Bintree {
         }
         else
         {
-            root.intersect(sb, x, y, z, xwid, ywid, zwid,0, 0, 0, WORLD_SIZE, WORLD_SIZE, WORLD_SIZE, 0, visited);
+            root.intersect(sb, x, y, z, xwid, ywid, zwid, 0, 0, 0, WORLD_SIZE, WORLD_SIZE, WORLD_SIZE, 0,
+                containsPoint(x, y, z, 0, 0, 0, WORLD_SIZE, WORLD_SIZE, WORLD_SIZE));
         }
         sb.append(visited).append(" nodes were visited in the bintree\r\n");
         return sb.toString();
@@ -87,6 +88,11 @@ public class Bintree {
         boolean zOverlap = z1 < z2 + d2 && z2 < z1 + d1;
         return xOverlap && yOverlap && zOverlap;
     }
+
+    private static boolean containsPoint(int px, int py, int pz, int x, int y, int z, int w, int h, int d)
+    {
+        return px >= x && px < x + w && py >= y && py < y + h && pz >= z && pz < z + d;
+    }
     /**
      * This is the interface for BinNode 
      */
@@ -96,7 +102,7 @@ public class Bintree {
         int countNodes();
         BinNode insert(AirObject obj, int x, int y, int z, int w, int h, int d, int depth);
         void intersect(StringBuilder sb, int x1, int y1, int z1, int w1, int h1, int d1,
-                       int x2, int y2, int z2, int w2, int h2, int d2, int depth, int visited);
+                       int x2, int y2, int z2, int w2, int h2, int d2, int depth, boolean allowEmit);
         void collisions(StringBuilder sb, int x, int y, int z, int w, int h, int d, int depth);
     }
     
@@ -122,7 +128,7 @@ public class Bintree {
             return leaf;
         }
         public void intersect(StringBuilder sb, int x1, int y1, int z1, int w1, int h1, int d1,
-            int x2, int y2, int z2, int w2, int h2, int d2, int depth, int visited)
+            int x2, int y2, int z2, int w2, int h2, int d2, int depth, boolean allowEmit)
         {
             return;
         }
@@ -226,10 +232,14 @@ public class Bintree {
             return internal;
         }
         public void intersect(StringBuilder sb, int x1, int y1, int z1, int w1, int h1, int d1,
-            int x2, int y2, int z2, int w2, int h2, int d2, int depth, int visited)
+            int x2, int y2, int z2, int w2, int h2, int d2, int depth, boolean allowEmit)
         {
             Bintree.visited++;
             if (!overlap(x1, y1, z1, w1, h1, d1, x2, y2, z2, w2, h2, d2))
+            {
+                return;
+            }
+            if (!allowEmit)
             {
                 return;
             }
@@ -390,52 +400,61 @@ public class Bintree {
             return this;
         }
         public void intersect(StringBuilder sb, int x1, int y1, int z1, int w1, int h1, int d1,
-                             int x2, int y2, int z2, int w2, int h2, int d2, int depth, int visited)
+                             int x2, int y2, int z2, int w2, int h2, int d2, int depth, boolean allowEmit)
         {
             Bintree.visited++;
             if (!overlap(x1, y1, z1, w1, h1, d1, x2, y2, z2, w2, h2, d2))
             {
                 return;
             }
-            sb.append("In Internal node (").append(x2).append(", ").append(y2).append(", ")
-                .append(z2).append(", ").append(w2).append(", ").append(h2).append(", ")
-                .append(d2).append(") ").append(depth).append("\r\n");
+            if (allowEmit)
+            {
+                sb.append("In Internal node (").append(x2).append(", ").append(y2).append(", ")
+                    .append(z2).append(", ").append(w2).append(", ").append(h2).append(", ")
+                    .append(d2).append(") ").append(depth).append("\r\n");
+            }
 
             int split = depth % 3;
             if (split == 0)
             {
                 int half = w2 / 2;
+                boolean leftEmit = allowEmit && containsPoint(x1, y1, z1, x2, y2, z2, half, h2, d2);
+                boolean rightEmit = allowEmit && containsPoint(x1, y1, z1, x2 + half, y2, z2, w2 - half, h2, d2);
                 if (overlap(x1, y1, z1, w1, h1, d1, x2, y2, z2, half, h2, d2))
                 {
-                    left.intersect(sb, x1, y1, z1, w1, h1, d1, x2, y2, z2, half, h2, d2, depth + 1, visited);
+                    left.intersect(sb, x1, y1, z1, w1, h1, d1, x2, y2, z2, half, h2, d2, depth + 1, leftEmit);
                 }
                 if (overlap(x1, y1, z1, w1, h1, d1, x2 + half, y2, z2, w2 - half, h2, d2))
                 {
-                    right.intersect(sb, x1, y1, z1, w1, h1, d1, x2 + half, y2, z2, w2 - half, h2, d2, depth + 1, visited);
+                    right.intersect(sb, x1, y1, z1, w1, h1, d1, x2 + half, y2, z2, w2 - half, h2, d2, depth + 1, rightEmit);
                 }
             }
             else if (split == 1)
             {
                 int half = h2 / 2;
+                boolean leftEmit = allowEmit && containsPoint(x1, y1, z1, x2, y2, z2, w2, half, d2);
+                boolean rightEmit = allowEmit && containsPoint(x1, y1, z1, x2, y2 + half, z2, w2, h2 - half, d2);
                 if (overlap(x1, y1, z1, w1, h1, d1, x2, y2, z2, w2, half, d2))
                 {
-                    left.intersect(sb, x1, y1, z1, w1, h1, d1, x2, y2, z2, w2, half, d2, depth + 1, visited);
+                    left.intersect(sb, x1, y1, z1, w1, h1, d1, x2, y2, z2, w2, half, d2, depth + 1, leftEmit);
                 }
                 if (overlap(x1, y1, z1, w1, h1, d1, x2, y2 + half, z2, w2, h2 - half, d2))
                 {
-                    right.intersect(sb, x1, y1, z1, w1, h1, d1, x2, y2 + half, z2, w2, h2 - half, d2, depth + 1, visited);
+                    right.intersect(sb, x1, y1, z1, w1, h1, d1, x2, y2 + half, z2, w2, h2 - half, d2, depth + 1, rightEmit);
                 }
             }
             else
             {
                 int half = d2 / 2;
+                boolean leftEmit = allowEmit && containsPoint(x1, y1, z1, x2, y2, z2, w2, h2, half);
+                boolean rightEmit = allowEmit && containsPoint(x1, y1, z1, x2, y2, z2 + half, w2, h2, d2 - half);
                 if (overlap(x1, y1, z1, w1, h1, d1, x2, y2, z2, w2, h2, half))
                 {
-                    left.intersect(sb, x1, y1, z1, w1, h1, d1, x2, y2, z2, w2, h2, half, depth + 1, visited);
+                    left.intersect(sb, x1, y1, z1, w1, h1, d1, x2, y2, z2, w2, h2, half, depth + 1, leftEmit);
                 }
                 if (overlap(x1, y1, z1, w1, h1, d1, x2, y2, z2 + half, w2, h2, d2 - half))
                 {
-                    right.intersect(sb, x1, y1, z1, w1, h1, d1, x2, y2, z2 + half, w2, h2, d2 - half, depth + 1, visited);
+                    right.intersect(sb, x1, y1, z1, w1, h1, d1, x2, y2, z2 + half, w2, h2, d2 - half, depth + 1, rightEmit);
                 }
             }
         }
