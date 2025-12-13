@@ -196,22 +196,31 @@ public class Bintree {
                 temp[i] = objects[i];
                 i--;
             }
-            boolean allIntersect = true;
-            for (int a = 0; a < temp.length && allIntersect; a++)
+            int interMinX = Integer.MIN_VALUE;
+            int interMinY = Integer.MIN_VALUE;
+            int interMinZ = Integer.MIN_VALUE;
+            int interMaxX = Integer.MAX_VALUE;
+            int interMaxY = Integer.MAX_VALUE;
+            int interMaxZ = Integer.MAX_VALUE;
+            for (AirObject airObject : temp)
             {
-                for (int b = a + 1; b < temp.length; b++)
-                {
-                    if (!overlap(temp[a].getXorig(), temp[a].getYorig(), temp[a].getZorig(),
-                        temp[a].getXwidth(), temp[a].getYwidth(), temp[a].getZwidth(),
-                        temp[b].getXorig(), temp[b].getYorig(), temp[b].getZorig(),
-                        temp[b].getXwidth(), temp[b].getYwidth(), temp[b].getZwidth()))
-                    {
-                        allIntersect = false;
-                        break;
-                    }
-                }
+                int objMinX = airObject.getXorig();
+                int objMinY = airObject.getYorig();
+                int objMinZ = airObject.getZorig();
+                int objMaxX = objMinX + airObject.getXwidth();
+                int objMaxY = objMinY + airObject.getYwidth();
+                int objMaxZ = objMinZ + airObject.getZwidth();
+
+                interMinX = Math.max(interMinX, objMinX);
+                interMinY = Math.max(interMinY, objMinY);
+                interMinZ = Math.max(interMinZ, objMinZ);
+                interMaxX = Math.min(interMaxX, objMaxX);
+                interMaxY = Math.min(interMaxY, objMaxY);
+                interMaxZ = Math.min(interMaxZ, objMaxZ);
             }
-            if (allIntersect)
+            boolean hasCommonIntersection = interMinX < interMaxX && interMinY < interMaxY
+                && interMinZ < interMaxZ;
+            if (hasCommonIntersection)
             {
                 objects = temp;
                 size++;
