@@ -52,20 +52,20 @@ public class Bintree {
     }
     public String intersect(int x, int y, int z, int xwid, int ywid, int zwid)
     {
-        visited = 0;
+        Bintree.visited = 0;
         StringBuilder sb = new StringBuilder();
         sb.append("The following objects intersect (");
         sb.append(x).append(", ").append(y).append(", ").append(z).append(", ");
         sb.append(xwid).append(", ").append(ywid).append(" ").append(zwid).append("):\r\n");
         if (root == FLYWEIGHT)
         {
-            visited = 1;
+            Bintree.visited = 1;
         }
         else
         {
             root.intersect(sb, x, y, z, xwid, ywid, zwid,0, 0, 0, WORLD_SIZE, WORLD_SIZE, WORLD_SIZE, 0, visited);
         }
-        sb.append(visited).append(" nodes were visited in the bintree\r\n");
+        sb.append(Bintree.visited).append(" nodes were visited in the bintree\r\n");
         return sb.toString();
     }
     public String collisions()
@@ -196,22 +196,7 @@ public class Bintree {
                 temp[i] = objects[i];
                 i--;
             }
-            boolean allIntersect = true;
-            for (int a = 0; a < temp.length && allIntersect; a++)
-            {
-                for (int b = a + 1; b < temp.length; b++)
-                {
-                    if (!overlap(temp[a].getXorig(), temp[a].getYorig(), temp[a].getZorig(),
-                        temp[a].getXwidth(), temp[a].getYwidth(), temp[a].getZwidth(),
-                        temp[b].getXorig(), temp[b].getYorig(), temp[b].getZorig(),
-                        temp[b].getXwidth(), temp[b].getYwidth(), temp[b].getZwidth()))
-                    {
-                        allIntersect = false;
-                        break;
-                    }
-                }
-            }
-            if (allIntersect)
+            if (commonIntersection(temp, temp.length))
             {
                 objects = temp;
                 size++;
@@ -295,6 +280,55 @@ public class Bintree {
             boolean yOverlap = y1 < y2 + h2 && y2 < y1 + h1;
             boolean zOverlap = z1 < z2 + d2 && z2 < z1 + d1;
             return xOverlap && yOverlap && zOverlap;
+        }
+
+        private boolean commonIntersection(AirObject[] temp, int length)
+        {
+            if (length == 0)
+            {
+                return false;
+            }
+            int maxX = temp[0].getXorig();
+            int maxY = temp[0].getYorig();
+            int maxZ = temp[0].getZorig();
+            int minX = temp[0].getXorig() + temp[0].getXwidth();
+            int minY = temp[0].getYorig() + temp[0].getYwidth();
+            int minZ = temp[0].getZorig() + temp[0].getZwidth();
+            for (int i = 1; i < length; i++)
+            {
+                AirObject obj = temp[i];
+                int objMaxX = obj.getXorig();
+                int objMaxY = obj.getYorig();
+                int objMaxZ = obj.getZorig();
+                int objMinX = obj.getXorig() + obj.getXwidth();
+                int objMinY = obj.getYorig() + obj.getYwidth();
+                int objMinZ = obj.getZorig() + obj.getZwidth();
+                if (objMaxX > maxX)
+                {
+                    maxX = objMaxX;
+                }
+                if (objMaxY > maxY)
+                {
+                    maxY = objMaxY;
+                }
+                if (objMaxZ > maxZ)
+                {
+                    maxZ = objMaxZ;
+                }
+                if (objMinX < minX)
+                {
+                    minX = objMinX;
+                }
+                if (objMinY < minY)
+                {
+                    minY = objMinY;
+                }
+                if (objMinZ < minZ)
+                {
+                    minZ = objMinZ;
+                }
+            }
+            return maxX < minX && maxY < minY && maxZ < minZ;
         }
     }
     /**
