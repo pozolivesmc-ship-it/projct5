@@ -33,6 +33,18 @@ public class Bintree {
         root = root.insert(obj, 0, 0, 0, WORLD_SIZE, WORLD_SIZE, WORLD_SIZE, 0);
     }
     /**
+     * This deletes an AirObject from the Bintree
+     * @param obj The object to delete
+     */
+    public void delete(AirObject obj)
+    {
+        if (obj == null)
+        {
+            return;
+        }
+        root = root.remove(obj, 0, 0, 0, WORLD_SIZE, WORLD_SIZE, WORLD_SIZE, 0);
+    }
+    /**
      * This is the printTree method
      * @return String for the tree
      */
@@ -95,6 +107,7 @@ public class Bintree {
         void print(StringBuilder sb, int x, int y, int z, int w, int h, int d, int depth);
         int countNodes();
         BinNode insert(AirObject obj, int x, int y, int z, int w, int h, int d, int depth);
+        BinNode remove(AirObject obj, int x, int y, int z, int w, int h, int d, int depth);
         void intersect(StringBuilder sb, int x1, int y1, int z1, int w1, int h1, int d1,
                        int x2, int y2, int z2, int w2, int h2, int d2, int depth, int visited);
         void collisions(StringBuilder sb, int x, int y, int z, int w, int h, int d, int depth);
@@ -120,6 +133,10 @@ public class Bintree {
             LeafNode leaf = new LeafNode();
             leaf.addObject(obj);
             return leaf;
+        }
+        public BinNode remove(AirObject obj, int x, int y, int z, int w, int h, int d, int depth)
+        {
+            return this;
         }
         public void intersect(StringBuilder sb, int x1, int y1, int z1, int w1, int h1, int d1,
             int x2, int y2, int z2, int w2, int h2, int d2, int depth, int visited)
@@ -224,6 +241,27 @@ public class Bintree {
                 internal.insert(temp[a], x, y, z, w, h, d, depth);
             }
             return internal;
+        }
+        public BinNode remove(AirObject obj, int x, int y, int z, int w, int h, int d, int depth)
+        {
+            for (int i = 0; i < size; i++)
+            {
+                if (objects[i] == obj)
+                {
+                    for (int j = i; j < size - 1; j++)
+                    {
+                        objects[j] = objects[j + 1];
+                    }
+                    size--;
+                    objects[size] = null;
+                    break;
+                }
+            }
+            if (size == 0)
+            {
+                return FLYWEIGHT;
+            }
+            return this;
         }
         public void intersect(StringBuilder sb, int x1, int y1, int z1, int w1, int h1, int d1,
             int x2, int y2, int z2, int w2, int h2, int d2, int depth, int visited)
@@ -386,6 +424,58 @@ public class Bintree {
                 {
                     right = right.insert(obj, x, y, z + half, w, h, d - half, depth + 1);
                 }
+            }
+            return this;
+        }
+        public BinNode remove(AirObject obj, int x, int y, int z, int w, int h, int d, int depth)
+        {
+            int split = depth % 3;
+            if (split == 0)
+            {
+                int half = w / 2;
+                if (overlap(obj.getXorig(), obj.getYorig(), obj.getZorig(),
+                    obj.getXwidth(), obj.getYwidth(), obj.getZwidth(), x, y, z, half, h, d))
+                {
+                    left = left.remove(obj, x, y, z, half, h, d, depth + 1);
+                }
+                if (overlap(obj.getXorig(), obj.getYorig(), obj.getZorig(),
+                    obj.getXwidth(), obj.getYwidth(), obj.getZwidth(),
+                    x + half, y, z, w - half, h, d))
+                {
+                    right = right.remove(obj, x + half, y, z, w - half, h, d, depth + 1);
+                }
+            }
+            else if (split == 1)
+            {
+                int half = h / 2;
+                if (overlap(obj.getXorig(), obj.getYorig(), obj.getZorig(),
+                    obj.getXwidth(), obj.getYwidth(), obj.getZwidth(), x, y, z, w, half, d))
+                {
+                    left = left.remove(obj, x, y, z, w, half, d, depth + 1);
+                }
+                if (overlap(obj.getXorig(), obj.getYorig(), obj.getZorig(),
+                    obj.getXwidth(), obj.getYwidth(), obj.getZwidth(), x, y + half, z, w, h - half, d))
+                {
+                    right = right.remove(obj, x, y + half, z, w, h - half, d, depth + 1);
+                }
+            }
+            else
+            {
+                int half = d / 2;
+                if (overlap(obj.getXorig(), obj.getYorig(), obj.getZorig(),
+                    obj.getXwidth(), obj.getYwidth(), obj.getZwidth(), x, y, z, w, h, half))
+                {
+                    left = left.remove(obj, x, y, z, w, h, half, depth + 1);
+                }
+                if (overlap(obj.getXorig(), obj.getYorig(), obj.getZorig(),
+                    obj.getXwidth(), obj.getYwidth(), obj.getZwidth(), x, y, z + half, w, h, d - half))
+                {
+                    right = right.remove(obj, x, y, z + half, w, h, d - half, depth + 1);
+                }
+            }
+            if (left == FLYWEIGHT && right == FLYWEIGHT)
+            {
+                return FLYWEIGHT;
             }
             return this;
         }
