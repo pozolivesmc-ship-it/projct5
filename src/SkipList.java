@@ -53,7 +53,7 @@ public class SkipList<K extends Comparable<K>, V> {
         }
         else
         {
-                rnd = rand;
+            rnd = rand;
         }
         level = 0;
         head = new SkipNode<>(null, null, HIGHEST_LEVEL);
@@ -91,14 +91,14 @@ public class SkipList<K extends Comparable<K>, V> {
      * Picks randoms level 
      * @return int for level
      */
-    private int randomLevel() 
-    {
-        int level;
-        for (level = 0; Math.abs(rnd.nextInt()) % 2 == 0; level++) { 
-          ; // Do nothing
+    private int randomLevel() {
+        int randLev = 0;
+        while (Math.abs(rnd.nextInt()) % 2 == 0) {
+            randLev++;
         }
-        return level;
+        return randLev;
     }
+
     /**
      * This is the insert method
      * @param name is the name inserted
@@ -108,7 +108,8 @@ public class SkipList<K extends Comparable<K>, V> {
     public void insert(K name, V object)
     {
         //Update array to keep track at each level
-        SkipNode<K, V>[] update = (SkipNode<K, V>[])new SkipNode[HIGHEST_LEVEL + 1];
+        SkipNode<K, V>[] update = 
+        		(SkipNode<K, V>[])new SkipNode[HIGHEST_LEVEL + 1];
         //Start from the head
         SkipNode<K, V> start = head;
         //Start comparing from the highest level to level 0
@@ -162,7 +163,8 @@ public class SkipList<K extends Comparable<K>, V> {
     @SuppressWarnings("unchecked")
     public boolean remove(K name)
     {
-        SkipNode<K, V>[] update = (SkipNode<K, V>[])new SkipNode[HIGHEST_LEVEL + 1];
+        SkipNode<K, V>[] update = (SkipNode<K, V>[])new SkipNode
+        		[HIGHEST_LEVEL + 1];
         //Start from the head
         SkipNode<K, V> start = head;
         //Start comparing from the highest level 
@@ -210,7 +212,9 @@ public class SkipList<K extends Comparable<K>, V> {
             return "SkipList is empty";
         }
         StringBuilder sb = new StringBuilder();
-        sb.append("Node has depth ").append(HIGHEST_LEVEL).append(", Value (null)\r\n");
+        sb.append("Node has depth ")
+        .append(HIGHEST_LEVEL)
+        	.append(", Value (null)\r\n");
         SkipNode<K, V> start = head.forward[0];
         int count = 0;
         //This starts at level 0 and prints each node

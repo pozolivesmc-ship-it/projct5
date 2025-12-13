@@ -200,13 +200,20 @@ public class WorldDB implements ATC {
      * @return String listing the AirObjects that intersect the given box.
      *         Return null if any input parameters are bad
      */
-    public String intersect(int x, int y, int z, int xwid, int ywid, int zwid) {
+    public String intersect(int x, int y, int z, int xwid, int ywid, int zwid)
+    {
         //Check if input is valid
-        if (x < 0 || y < 0 || z < 0 || x >= worldSize || y >= worldSize || z >= worldSize ||
-            xwid <= 0 || ywid <= 0 || zwid <= 0 || 
-            xwid + x > worldSize || ywid + y > worldSize || zwid + z > worldSize)
+        if (x < 0 || y < 0 || z < 0 || x >= worldSize || y >= worldSize)
         {
             return null;
+        }
+        if (z >= worldSize || xwid + x > worldSize || ywid <= 0 || zwid <= 0) 
+        {
+            return null;
+        }
+        if (xwid <= 0 || ywid + y > worldSize || zwid + z > worldSize)
+        {
+        	return null;
         }
         return bintree.intersect(x, y, z, xwid, ywid, zwid);
     }

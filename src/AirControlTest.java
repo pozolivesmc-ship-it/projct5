@@ -229,7 +229,9 @@ public class AirControlTest extends TestCase {
         assertFalse(w.add(null));
         assertTrue(w.add(new AirPlane("Air1",
             0, 10, 1, 20, 2, 30, "USAir", 717, 4)));
-        assertFuzzyEquals(w.print("Air1") , "Airplane Air1 0 10 1 20 2 30 USAir 717 4");
+        assertFuzzyEquals(
+                w.print("Air1"),
+        	    "Airplane Air1 0 10 1 20 2 30 USAir 717 4");
     }
     /**
      * This tests when there's 2 of the same name
@@ -245,7 +247,8 @@ public class AirControlTest extends TestCase {
             10, 20, 30, 30, 30, 40, "Hawk", 2);
         assertTrue(w.add(b1));
         assertFalse(w.add(b2));
-        assertFuzzyEquals(w.print("pterodactyl"), "Bird pterodactyl 0 100 20 10 50 50 Dinosaur 1");
+        assertFuzzyEquals(w.print("pterodactyl"), "Bird pterodactyl 0 100"
+        		+ " 20 10 50 50 Dinosaur 1");
     }
     /**
      * This tests the delete logic 
@@ -331,7 +334,8 @@ public class AirControlTest extends TestCase {
         assertNull(w.rangeprint("z", "a"));
         String result = w.rangeprint("a", "z");
         assertNotNull(result);
-        assertTrue(result.startsWith("Found these records in the range a to z"));  
+        assertTrue(result.startsWith("Found these records in the range a"
+        		+ " to z"));  
     }
     /**
      * This tests the printbintree() method
@@ -357,9 +361,11 @@ public class AirControlTest extends TestCase {
                     + "    (Airplane Air1 0 10 1 20 2 30 USAir 717 4)\r\n"
                     + "    (Balloon B1 10 11 11 21 12 31 hot_air 15)\r\n"
                     + "    (Bird pterodactyl 0 100 20 10 50 50 Dinosaur 1)\r\n"
-                    + "    Leaf with 1 objects (0, 512, 0, 512, 512, 1024) 2\r\n"
+                    + "    Leaf with 1 objects (0, 512, 0, 512, 512, 1024)"
+                    + " 2\r\n"
                     + "    (Drone Air2 100 1010 101 924 2 900 Droners 3)\r\n"
-                    + "  Leaf with 1 objects (512, 0, 0, 512, 1024, 1024) 1\r\n"
+                    + "  Leaf with 1 objects (512, 0, 0, 512, 1024, 1024)"
+                    + " 1\r\n"
                     + "  (Drone Air2 100 1010 101 924 2 900 Droners 3)\r\n"
                     + "5 Bintree nodes printed\r\n",
                     w.printbintree());
