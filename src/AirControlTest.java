@@ -494,4 +494,476 @@ public class AirControlTest extends TestCase {
         assertFalse(result.contains("Balloon B1"));
         assertTrue(result.startsWith("The following objects intersect"));
     }
+    
+    /**
+     * Test inserting null object - covers line 29
+     */
+    public void testInsertNull() {
+        Random rnd = new Random();
+        rnd.setSeed(0xCAFEBEEF);
+        WorldDB w = new WorldDB(rnd);
+        
+        // This should trigger the null check in Bintree.insert()
+        w.add(null);
+        
+        // Verify tree is still empty
+        assertFuzzyEquals(
+            "E (0, 0, 0, 1024, 1024, 1024) 0\r\n"
+                + "1 Bintree nodes printed\r\n",
+            w.printbintree());
+    }
+    
+    /**
+     * Test removing null object - covers line 42
+     */
+    public void testRemoveNull() {
+        Random rnd = new Random();
+        rnd.setSeed(0xCAFEBEEF);
+        WorldDB w = new WorldDB(rnd);
+        
+        assertTrue(w.add(
+        	    new Balloon("B1", 10, 11, 11, 21, 12, 31, "hot_air", 15)));
+        
+        // This triggers the null check in Bintree.remove()
+        w.delete(null);
+        
+        // Object should still be there
+        assertNotNull(w.print("B1"));
+    }
+    
+    /**
+     * Test that triggers array expansion in LeafNode - covers lines 201-206
+     */
+    public void testLeafNodeArrayExpansion() {
+        Random rnd = new Random();
+        rnd.setSeed(0xCAFEBEEF);
+        WorldDB w = new WorldDB(rnd);
+        
+        // Add 5+ objects that all overlap to trigger array expansion
+        // They all share common intersection so won't split
+        assertTrue(w.add(new Balloon("B1", 10, 10, 10, 50, 50, 50, "hot", 5)));
+        assertTrue(w.add(new Balloon("B2", 15, 15, 15, 40, 40, 40, "hot", 5)));
+        assertTrue(w.add(new Balloon("B3", 20, 20, 20, 30, 30, 30, "hot", 5)));
+        assertTrue(w.add(new Balloon("B4", 25, 25, 25, 20, 20, 20, "hot", 5)));
+        assertTrue(w.add(new Balloon("B5", 30, 30, 30, 10, 10, 10, "hot", 5)));
+        
+        String result = w.printbintree();
+        assertTrue(result.contains("Leaf with 5 objects"));
+    }
+    
+    /**
+     * Test hasCommonIntersection when size is 0 - covers line 58 in Image 5
+     */
+    public void testHasCommonIntersectionEmptyLeaf() {
+        Random rnd = new Random();
+        rnd.setSeed(0xCAFEBEEF);
+        WorldDB w = new WorldDB(rnd);
+        
+        // Add then remove to create empty scenario
+        assertTrue(w.add(new Balloon("B1", 10, 10, 10, 20, 20, 20, "hot", 5)));
+        assertNotNull(w.delete("B1"));
+        
+        // Tree should be empty now
+        assertFuzzyEquals(
+            "E (0, 0, 0, 1024, 1024, 1024) 0\r\n"
+                + "1 Bintree nodes printed\r\n",
+            w.printbintree());
+    }
+    
+    /**
+     * Test hasCommonIntersection full logic - covers lines 311-956 in Image 5
+     */
+    public void testHasCommonIntersectionMultipleObjects() {
+        Random rnd = new Random();
+        rnd.setSeed(0xCAFEBEEF);
+        WorldDB w = new WorldDB(rnd);
+        
+        // Create objects with complex intersection pattern
+        assertTrue(w.add(
+        	    new Bird("B1", 100, 100, 100, 50, 50, 50, "Eagle", 1)));
+
+        	assertTrue(w.add(
+        	    new Bird("B2", 120, 120, 120, 40, 40, 40, "Hawk", 1)));
+
+        	assertTrue(w.add(
+        	    new Bird("B3", 130, 130, 130, 30, 30, 30, "Falcon", 1)));
+
+        	assertTrue(w.add(
+        	    new Bird("B4", 140, 140, 140, 20, 20, 20, "Sparrow", 1)));
+
+        
+        // These should all be in same leaf due to common intersection
+        String result = w.printbintree();
+        assertTrue(result.contains("Leaf"));
+    }
+    
+    /**
+     * Test LeafNode.remove when object not found - covers line 1069
+     */
+    public void testRemoveNonexistentFromLeaf() {
+        Random rnd = new Random();
+        rnd.setSeed(0xCAFEBEEF);
+        WorldDB w = new WorldDB(rnd);
+        
+        assertTrue(w.add(new Balloon("B1", 10, 10, 10, 20, 20, 20, "hot", 5)));
+        
+        // Try to delete something that doesn't exist
+        assertNull(w.delete("NonExistent"));
+        
+        // B1 should still be there
+        assertNotNull(w.print("B1"));
+    }
+    
+    /**
+     * Test LeafNode.remove that makes leaf empty - covers line 1235
+     */
+    public void testRemoveLastObjectFromLeaf() {
+        Random rnd = new Random();
+        rnd.setSeed(0xCAFEBEEF);
+        WorldDB w = new WorldDB(rnd);
+        
+        // Add single object
+        assertTrue(w.add(new Balloon("B1", 10, 10, 10, 20, 20, 20, "hot", 5)));
+        assertNotNull(w.print("B1"));
+        
+        // Remove it - should return to FLYWEIGHT
+        assertNotNull(w.delete("B1"));
+        
+        // Tree should be empty
+        assertFuzzyEquals(
+            "E (0, 0, 0, 1024, 1024, 1024) 0\r\n"
+                + "1 Bintree nodes printed\r\n",
+            w.printbintree());
+    }
+    
+    /**
+     * Test InternalNode collapse scenarios - covers lines 564-597
+     */
+    public void testInternalNodeCollapse() {
+        Random rnd = new Random();
+        rnd.setSeed(0xCAFEBEEF);
+        WorldDB w = new WorldDB(rnd);
+        
+        // Create a tree that will split
+        assertTrue(w.add(new Balloon("B1", 10, 10, 10, 20, 20, 20, "hot", 5)));
+        assertTrue(w.add(
+        	    new Balloon("B2", 600, 600, 600, 20, 20, 20, "hot", 5)));
+        assertTrue(w.add(new Balloon("B3", 30, 30, 30, 20, 20, 20, "hot", 5)));
+        assertTrue(w.add(new Balloon("B4", 50, 50, 50, 20, 20, 20, "hot", 5)));
+        
+        // Should have internal nodes now
+        String before = w.printbintree();
+        assertTrue(before.contains("I ("));
+        
+        // Remove objects to trigger collapse
+        w.delete("B2");
+        w.delete("B3");
+        w.delete("B4");
+        
+        // Tree should collapse
+        String after = w.printbintree();
+        assertTrue(after.contains("Leaf"));
+    }
+    
+    /**
+     * Test both children are leaf nodes merge - covers lines 573-587
+     */
+    public void testMergeTwoLeafNodes() {
+        Random rnd = new Random();
+        rnd.setSeed(0xCAFEBEEF);
+        WorldDB w = new WorldDB(rnd);
+        
+        // Create scenario with two leaf children
+        assertTrue(w.add(new Drone("D1", 100, 100, 100, 50, 50, 50, "DJI", 4)));
+        assertTrue(w.add(
+        	    new Drone("D2", 600, 100, 100, 50, 50, 50, "Parrot", 4)));
+
+        	assertTrue(w.add(
+        	    new Drone("D3", 200, 100, 100, 50, 50, 50, "Skydio", 4)));
+
+        
+        // Create internal node structure
+        String before = w.printbintree();
+        
+        // Remove to trigger merge
+        w.delete("D2");
+        w.delete("D3");
+        
+        String after = w.printbintree();
+        assertTrue(after.contains("Leaf"));
+    }
+    
+    /**
+     * Test gatherObjects with InternalNode - covers line 799
+     */
+    public void testGatherObjectsFromInternalNode() {
+        Random rnd = new Random();
+        rnd.setSeed(0xCAFEBEEF);
+        WorldDB w = new WorldDB(rnd);
+        
+        // Create deep tree structure
+        assertTrue(w.add(new Rocket("R1", 50, 50, 50, 30, 30, 30, 100, 45.0)));
+        assertTrue(w.add(new Rocket("R2", 600, 50, 50, 30, 30, 30, 100, 45.0)));
+        assertTrue(w.add(new Rocket("R3", 100, 50, 50, 30, 30, 30, 100, 45.0)));
+        assertTrue(w.add(new Rocket("R4", 150, 50, 50, 30, 30, 30, 100, 45.0)));
+        
+        // Remove some to trigger gather
+        w.delete("R2");
+        w.delete("R3");
+        
+        assertNotNull(w.print("R1"));
+    }
+    
+    /**
+     * Test Y-dimension split in InternalNode.print - covers lines 504-505
+     */
+    public void testYDimensionSplit() {
+        Random rnd = new Random();
+        rnd.setSeed(0xCAFEBEEF);
+        WorldDB w = new WorldDB(rnd);
+        
+        // Need 4+ objects to force split (LEAF_MAX = 3)
+        assertTrue(w.add(new AirPlane(
+        	    "A1", 100, 100, 100, 50, 50,
+        	    50, "United", 100, 2)));
+        	assertTrue(w.add(new AirPlane(
+        	    "A2", 100, 600, 100, 50, 50,
+        	    50, "Delta", 200, 2)));
+        	assertTrue(w.add(new AirPlane(
+        	    "A3", 150, 100, 100, 50, 50,
+        	    50, "Southwest", 300, 2)));
+        	assertTrue(w.add(new AirPlane(
+        	    "A4", 150, 600, 100, 50, 50,
+        	    50, "American", 400, 2)));
+
+        
+        String result = w.printbintree();
+        // Should have internal nodes at different levels
+        assertTrue(result.contains("I ("));
+    }
+    
+    /**
+     * Test Z-dimension split - covers Image 9 else block
+     */
+    public void testZDimensionSplit() {
+        Random rnd = new Random();
+        rnd.setSeed(0xCAFEBEEF);
+        WorldDB w = new WorldDB(rnd);
+        
+        // Need 4+ objects to force split (LEAF_MAX = 3)
+        assertTrue(w.add(new AirPlane(
+        	    "A1", 100, 100, 100, 50, 50,
+        	    50, "United", 100, 2)));
+        	assertTrue(w.add(new AirPlane(
+        	    "A2", 100, 100, 600, 50, 50,
+        	    50, "Delta", 200, 2)));
+        	assertTrue(w.add(new AirPlane(
+        	    "A3", 150, 100, 100, 50, 50,
+        	    50, "Southwest", 300, 2)));
+        	assertTrue(w.add(new AirPlane(
+        	    "A4", 150, 100, 600, 50, 50,
+        	    50, "American", 400, 2)));
+
+
+        
+        String result = w.printbintree();
+        assertTrue(result.contains("I ("));
+    }
+    
+    /**
+     * Test InternalNode.insert on all three dimensions - covers Image 10
+     */
+    public void testInsertAllDimensions() {
+        Random rnd = new Random();
+        rnd.setSeed(0xCAFEBEEF);
+        WorldDB w = new WorldDB(rnd);
+        
+        // X split (depth 0)
+        assertTrue(w.add(
+        		new Bird("B1", 100, 100, 100, 50, 50, 50, "Eagle", 1)));
+        assertTrue(w.add(
+        		new Bird("B2", 600, 100, 100, 50, 50, 50, "Hawk", 1)));
+        
+        // Y split (depth 1)
+        assertTrue(w.add(
+        		new Bird("B3", 100, 600, 100, 50, 50, 50, "Falcon", 1)));
+        
+        // Z split (depth 2)
+        assertTrue(w.add(
+        		new Bird("B4", 100, 100, 600, 50, 50, 50, "Sparrow", 1)));
+        
+        String result = w.printbintree();
+        assertTrue(result.contains("I ("));
+    }
+    
+    /**
+     * Test InternalNode.remove on Y and Z dimensions - covers Image 11
+     */
+    public void testRemoveYZDimensions() {
+        Random rnd = new Random();
+        rnd.setSeed(0xCAFEBEEF);
+        WorldDB w = new WorldDB(rnd);
+        
+        // Create objects across all dimensions
+        assertTrue(w.add(new Drone("D1", 100, 100, 100, 50, 50, 50, "DJI", 4)));
+        assertTrue(w.add(
+        		new Drone("D2", 100, 600, 100, 50, 50, 50, "Parrot", 4)));
+        assertTrue(w.add(
+        		new Drone("D3", 100, 100, 600, 50, 50, 50, "Skydio", 4)));
+        assertTrue(w.add(
+        		new Drone("D4", 600, 100, 100, 50, 50, 50, "Autel", 4)));
+        
+        // Remove to trigger Y and Z dimension removes
+        assertNotNull(w.delete("D2"));
+        assertNotNull(w.delete("D3"));
+        
+        String result = w.printbintree();
+        assertNotNull(result);
+    }
+    
+    /**
+     * Test InternalNode with only left child - covers line 567-571
+     */
+    public void testInternalNodeOnlyLeftChild() {
+        Random rnd = new Random();
+        rnd.setSeed(0xCAFEBEEF);
+        WorldDB w = new WorldDB(rnd);
+        
+        // Create split
+        assertTrue(w.add(new Balloon("B1", 10, 10, 10, 20, 20, 20, "hot", 5)));
+        assertTrue(w.add(
+        		new Balloon("B2", 600, 10, 10, 20, 20, 20, "cold", 5)));
+        assertTrue(w.add(new Balloon("B3", 30, 10, 10, 20, 20, 20, "warm", 5)));
+        
+        // Remove right side
+        w.delete("B2");
+        
+        String result = w.printbintree();
+        assertNotNull(result);
+    }
+    
+    /**
+     * Test InternalNode with only right child - covers line 570
+     */
+    public void testInternalNodeOnlyRightChild() {
+        Random rnd = new Random();
+        rnd.setSeed(0xCAFEBEEF);
+        WorldDB w = new WorldDB(rnd);
+        
+        // Create split
+        assertTrue(w.add(new Balloon("B1", 600, 10, 10, 20, 20, 20, "hot", 5)));
+        assertTrue(w.add(new Balloon("B2", 10, 10, 10, 20, 20, 20, "cold", 5)));
+        assertTrue(w.add(
+        		new Balloon("B3", 700, 10, 10, 20, 20, 20, "warm", 5)));
+        
+        // Remove left side
+        w.delete("B2");
+        
+        String result = w.printbintree();
+        assertNotNull(result);
+    }
+    
+    /**
+     * Test InternalNode.intersect on all dimensions - covers Image 13
+     */
+    public void testIntersectAllDimensions() {
+        Random rnd = new Random();
+        rnd.setSeed(0xCAFEBEEF);
+        WorldDB w = new WorldDB(rnd);
+        
+        // Create objects across all dimensions
+        assertTrue(w.add(
+        	    new Rocket("R1", 100, 100, 100, 50, 50, 50, 100, 45.0)));
+        	assertTrue(w.add(
+        	    new Rocket("R2", 600, 100, 100, 50, 50, 50, 100, 45.0)));
+        	assertTrue(w.add(
+        	    new Rocket("R3", 100, 600, 100, 50, 50, 50, 100, 45.0)));
+        	assertTrue(w.add(
+        	    new Rocket("R4", 100, 100, 600, 50, 50, 50, 100, 45.0)));
+
+        
+        // Intersect query that spans multiple nodes
+        String result = w.intersect(50, 50, 50, 600, 600, 600);
+        assertNotNull(result);
+        assertTrue(result.contains("Rocket R1"));
+        assertTrue(result.contains("nodes were visited"));
+    }
+    
+    /**
+     * Test InternalNode.collisions on all dimensions - covers Image 13 bottom
+     */
+    public void testCollisionsAllDimensions() {
+        Random rnd = new Random();
+        rnd.setSeed(0xCAFEBEEF);
+        WorldDB w = new WorldDB(rnd);
+        
+        // Create overlapping objects
+        assertTrue(w.add(new AirPlane(
+        	    "A1", 100, 100, 100, 100, 100,
+        	    100, "United", 100, 2)));
+        assertTrue(w.add(new AirPlane(
+        	    "A2", 150, 150, 150, 100, 100,
+        	    100, "Delta", 200, 2)));
+        assertTrue(w.add(new AirPlane(
+        	    "A3", 600, 600, 600, 100, 100,
+        	    100, "Southwest", 300, 2)));
+        
+        String result = w.collisions();
+        assertNotNull(result);
+        assertTrue(result.contains("collisions exist"));
+    }
+    
+    /**
+     * Test collision with containsPoint check - covers Image 7 line 607
+     */
+    public void testCollisionContainsPoint() {
+        Random rnd = new Random();
+        rnd.setSeed(0xCAFEBEEF);
+        WorldDB w = new WorldDB(rnd);
+        
+        // Create colliding objects in specific leaf
+        assertTrue(w.add(
+        		new Drone("D1", 100, 100, 100, 80, 80, 80, "DJI", 4)));
+        assertTrue(w.add(
+        		new Drone("D2", 120, 120, 120, 60, 60, 60, "Parrot", 4)));
+        
+        String result = w.collisions();
+        assertTrue(result.contains("In leaf node"));
+    }
+    
+    /**
+     * Test LeafNode.intersect without overlap - covers Image 6 line 124
+     */
+    public void testLeafIntersectNoOverlap() {
+        Random rnd = new Random();
+        rnd.setSeed(0xCAFEBEEF);
+        WorldDB w = new WorldDB(rnd);
+        
+        // Add object in one area
+        assertTrue(w.add(new Balloon("B1", 10, 10, 10, 20, 20, 20, "hot", 5)));
+        
+        // Query far away area
+        String result = w.intersect(800, 800, 800, 100, 100, 100);
+        assertNotNull(result);
+        assertFalse(result.contains("Balloon B1"));
+    }
+    
+    /**
+     * Test InternalNode.intersect without overlap - covers Image 13 line 605
+     */
+    public void testInternalIntersectNoOverlap() {
+        Random rnd = new Random();
+        rnd.setSeed(0xCAFEBEEF);
+        WorldDB w = new WorldDB(rnd);
+        
+        // Create internal node
+        assertTrue(w.add(new Rocket("R1", 10, 10, 10, 50, 50, 50, 100, 45.0)));
+        assertTrue(w.add(new Rocket("R2", 600, 10, 10, 50, 50, 50, 100, 45.0)));
+        
+        // Query area with no overlap
+        String result = w.intersect(400, 400, 400, 50, 50, 50);
+        assertNotNull(result);
+        // Should visit root but not find matches
+        assertTrue(result.contains("nodes were visited"));
+    }
 }

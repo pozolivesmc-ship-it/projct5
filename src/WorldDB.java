@@ -202,18 +202,13 @@ public class WorldDB implements ATC {
      */
     public String intersect(int x, int y, int z, int xwid, int ywid, int zwid)
     {
-        //Check if input is valid
-        if (x < 0 || y < 0 || z < 0 || x >= worldSize || y >= worldSize)
+        // Check ALL invalid conditions first
+        if (x < 0 || y < 0 || z < 0 || 
+            xwid <= 0 || ywid <= 0 || zwid <= 0 ||
+            x >= worldSize || y >= worldSize || z >= worldSize ||
+            x + xwid > worldSize || y + ywid > worldSize || z + zwid > worldSize)
         {
             return null;
-        }
-        if (z >= worldSize || xwid + x > worldSize || ywid <= 0 || zwid <= 0) 
-        {
-            return null;
-        }
-        if (xwid <= 0 || ywid + y > worldSize || zwid + z > worldSize)
-        {
-        	return null;
         }
         return bintree.intersect(x, y, z, xwid, ywid, zwid);
     }
