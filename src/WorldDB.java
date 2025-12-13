@@ -49,15 +49,22 @@ public class WorldDB implements ATC {
      * @return True iff the AirObject is successfully entered into the database
      */
     public boolean add(AirObject a) {
-        if (a == null || a.getName() == null) {
+        //Check if object is null
+        if (a == null)
+        {
             return false;
         }
-        if (!a.isValid()) {
+        //Checks if valid
+        if (!a.isValid())
+        {
             return false;
         }
-        if (skiplist.find(a.getName()) != null) {
+        //Checks for duplicate
+        if (skiplist.find(a.getName()) != null)
+        {
             return false;
         }
+        //Insert it into both and return true
         skiplist.insert(a.getName(), a);
         bintree.insert(a);
         return true;
