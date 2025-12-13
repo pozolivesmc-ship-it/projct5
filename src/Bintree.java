@@ -55,8 +55,8 @@ public class Bintree {
         visited = 0;
         StringBuilder sb = new StringBuilder();
         sb.append("The following objects intersect (");
-        sb.append(x).append(" ").append(y).append(" ").append(z).append(" ");
-        sb.append(xwid).append(" ").append(ywid).append(" ").append(zwid).append("):\r\n");
+        sb.append(x).append(", ").append(y).append(", ").append(z).append(", ");
+        sb.append(xwid).append(", ").append(ywid).append(" ").append(zwid).append("):\r\n");
         if (root == FLYWEIGHT)
         {
             visited = 1;
@@ -196,49 +196,21 @@ public class Bintree {
                 temp[i] = objects[i];
                 i--;
             }
-            int interX1 = temp[0].getXorig();
-            int interY1 = temp[0].getYorig();
-            int interZ1 = temp[0].getZorig();
-            int interX2 = temp[0].getXorig() + temp[0].getXwidth();
-            int interY2 = temp[0].getYorig() + temp[0].getYwidth();
-            int interZ2 = temp[0].getZorig() + temp[0].getZwidth();
-            for (int idx = 1; idx < temp.length; idx++)
+            boolean allIntersect = true;
+            for (int a = 0; a < temp.length && allIntersect; a++)
             {
-                AirObject current = temp[idx];
-                int curX1 = current.getXorig();
-                int curY1 = current.getYorig();
-                int curZ1 = current.getZorig();
-                int curX2 = curX1 + current.getXwidth();
-                int curY2 = curY1 + current.getYwidth();
-                int curZ2 = curZ1 + current.getZwidth();
-                if (curX1 > interX1)
+                for (int b = a + 1; b < temp.length; b++)
                 {
-                    interX1 = curX1;
-                }
-                if (curY1 > interY1)
-                {
-                    interY1 = curY1;
-                }
-                if (curZ1 > interZ1)
-                {
-                    interZ1 = curZ1;
-                }
-                if (curX2 < interX2)
-                {
-                    interX2 = curX2;
-                }
-                if (curY2 < interY2)
-                {
-                    interY2 = curY2;
-                }
-                if (curZ2 < interZ2)
-                {
-                    interZ2 = curZ2;
+                    if (!overlap(temp[a].getXorig(), temp[a].getYorig(), temp[a].getZorig(),
+                        temp[a].getXwidth(), temp[a].getYwidth(), temp[a].getZwidth(),
+                        temp[b].getXorig(), temp[b].getYorig(), temp[b].getZorig(),
+                        temp[b].getXwidth(), temp[b].getYwidth(), temp[b].getZwidth()))
+                    {
+                        allIntersect = false;
+                        break;
+                    }
                 }
             }
-
-            boolean allIntersect = interX1 < interX2 && interY1 < interY2 && interZ1 < interZ2;
-
             if (allIntersect)
             {
                 objects = temp;
