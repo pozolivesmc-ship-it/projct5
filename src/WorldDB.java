@@ -93,8 +93,6 @@ public class WorldDB implements ATC {
         }
         //Remove from SkipList
         skiplist.remove(name);
-        //Remove from Bintree
-        bintree.delete(target);
         return target.toString();
     }
     
