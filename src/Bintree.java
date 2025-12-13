@@ -99,6 +99,10 @@ public class Bintree {
         }
         visited = 0;
         StringBuilder sb = new StringBuilder();
+        if (xwid <= 0 || ywid <= 0 || zwid <= 0)
+        {
+            return null;
+        }
         sb.append("The following objects intersect (");
         sb.append(x).append(" ").append(y).append(" ").append(z).append(" ");
         sb.append(xwid).append(" ").append(ywid).append(" ").append(zwid).append("):\r\n");
@@ -149,7 +153,7 @@ public class Bintree {
         }
         public int countNodes()
         {
-            return 1;
+            return 0;
         }
         public BinNode insert(AirObject obj, int x, int y, int z, int w, int h, int d, int depth)
         {
@@ -315,19 +319,23 @@ public class Bintree {
             sb.append("In leaf node (").append(x2).append(", ").append(y2).append(", ");
             sb.append(z2).append(", ").append(w2).append(", ").append(h2).append(", ");
             sb.append(d2).append(") ").append(depth).append("\r\n");
-            int ix = Math.max(x1, x2);
-            int iy = Math.max(y1, y2);
-            int iz = Math.max(z1, z2);
-            if (containsPoint(ix, iy, iz, x2, y2, z2, w2, h2, d2))
+
+            for (int i = 0; i < size; i++)
             {
-                for (int i = 0; i < size; i++)
+                if (!overlap(objects[i].getXorig(), objects[i].getYorig(), objects[i].getZorig(),
+                        objects[i].getXwidth(), objects[i].getYwidth(), objects[i].getZwidth(),
+                        x1, y1, z1, w1, h1, d1))
                 {
-                    if (overlap(objects[i].getXorig(), objects[i].getYorig(), objects[i].getZorig(),
-                            objects[i].getXwidth(), objects[i].getYwidth(), objects[i].getZwidth(),
-                            x1, y1, z1, w1, h1, d1))
-                    {
-                        sb.append(objects[i].toString()).append("\r\n");
-                    }
+                    continue;
+                }
+
+                int ix = Math.max(objects[i].getXorig(), x1);
+                int iy = Math.max(objects[i].getYorig(), y1);
+                int iz = Math.max(objects[i].getZorig(), z1);
+
+                if (containsPoint(ix, iy, iz, x2, y2, z2, w2, h2, d2))
+                {
+                    sb.append(objects[i].toString()).append("\r\n");
                 }
             }
         }
@@ -385,25 +393,52 @@ public class Bintree {
             if (split == 0)
             {
                 int half = w / 2;
-                left.print(sb, x, y, z, half, h, d, depth + 1);
-                right.print(sb, x + half, y, z, w - half, h, d, depth + 1);
+                if (left != FLYWEIGHT)
+                {
+                    left.print(sb, x, y, z, half, h, d, depth + 1);
+                }
+                if (right != FLYWEIGHT)
+                {
+                    right.print(sb, x + half, y, z, w - half, h, d, depth + 1);
+                }
             }
             else if (split == 1)
             {
                 int half = h / 2;
-                left.print(sb, x, y, z, w, half, d, depth + 1);
-                right.print(sb, x, y + half, z, w, h - half, d, depth + 1);
+                if (left != FLYWEIGHT)
+                {
+                    left.print(sb, x, y, z, w, half, d, depth + 1);
+                }
+                if (right != FLYWEIGHT)
+                {
+                    right.print(sb, x, y + half, z, w, h - half, d, depth + 1);
+                }
             }
             else
             {
                 int half = d / 2;
-                left.print(sb, x, y, z, w, h, half, depth + 1);
-                right.print(sb, x, y, z + half, w, h, d - half, depth + 1);
+                if (left != FLYWEIGHT)
+                {
+                    left.print(sb, x, y, z, w, h, half, depth + 1);
+                }
+                if (right != FLYWEIGHT)
+                {
+                    right.print(sb, x, y, z + half, w, h, d - half, depth + 1);
+                }
             }
         }
         public int countNodes()
         {
-            return 1 + left.countNodes() + right.countNodes();
+            int count = 1;
+            if (left != FLYWEIGHT)
+            {
+                count += left.countNodes();
+            }
+            if (right != FLYWEIGHT)
+            {
+                count += right.countNodes();
+            }
+            return count;
         }
         public BinNode insert(AirObject obj, int x, int y, int z, int w, int h, int d, int depth)
         {
