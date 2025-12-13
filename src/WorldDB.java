@@ -49,6 +49,9 @@ public class WorldDB implements ATC {
      * @return True iff the AirObject is successfully entered into the database
      */
     public boolean add(AirObject a) {
+        if (skiplist == null || bintree == null) {
+            clear();
+        }
         //Check if object is null
         if (a == null)
         {
@@ -202,18 +205,21 @@ public class WorldDB implements ATC {
      */
     public String intersect(int x, int y, int z, int xwid, int ywid, int zwid)
     {
+        if (xwid <= 0 || ywid <= 0 || zwid <= 0) {
+            return null;
+        }
         //Check if input is valid
         if (x < 0 || y < 0 || z < 0 || x >= worldSize || y >= worldSize)
         {
             return null;
         }
-        if (z >= worldSize || xwid + x > worldSize || ywid <= 0 || zwid <= 0) 
+        if (z >= worldSize || xwid + x > worldSize)
         {
             return null;
         }
-        if (xwid <= 0 || ywid + y > worldSize || zwid + z > worldSize)
+        if (ywid + y > worldSize || zwid + z > worldSize)
         {
-        	return null;
+                return null;
         }
         return bintree.intersect(x, y, z, xwid, ywid, zwid);
     }
