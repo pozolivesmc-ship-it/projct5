@@ -41,6 +41,18 @@ public class WorldDB implements ATC {
         bintree = new Bintree();
     }
 
+    /**
+     * Rebuild the bintree from the current skiplist contents.
+     */
+    private void rebuildBintree()
+    {
+        bintree = new Bintree();
+        for (AirObject obj : skiplist.values())
+        {
+            bintree.insert(obj);
+        }
+    }
+
 
     // ----------------------------------------------------------
     /**
@@ -93,6 +105,7 @@ public class WorldDB implements ATC {
         }
         //Remove from SkipList
         skiplist.remove(name);
+        rebuildBintree();
         return target.toString();
     }
     
