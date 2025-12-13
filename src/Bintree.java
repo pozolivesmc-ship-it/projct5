@@ -353,19 +353,22 @@ public class Bintree {
 
         private boolean commonIntersection(AirObject obj)
         {
-            if (size == 0)
+            // Build the intersection using an existing element as the seed to
+            // avoid relying solely on the new object for initialization.
+            if (size == 0 && obj == null)
             {
                 return false;
             }
 
-            int maxX = obj.getXorig();
-            int maxY = obj.getYorig();
-            int maxZ = obj.getZorig();
-            int minX = obj.getXorig() + obj.getXwidth();
-            int minY = obj.getYorig() + obj.getYwidth();
-            int minZ = obj.getZorig() + obj.getZwidth();
+            AirObject first = size > 0 ? objects[0] : obj;
+            int maxX = first.getXorig();
+            int maxY = first.getYorig();
+            int maxZ = first.getZorig();
+            int minX = first.getXorig() + first.getXwidth();
+            int minY = first.getYorig() + first.getYwidth();
+            int minZ = first.getZorig() + first.getZwidth();
 
-            for (int i = 0; i < size; i++)
+            for (int i = 1; i < size; i++)
             {
                 maxX = Math.max(maxX, objects[i].getXorig());
                 maxY = Math.max(maxY, objects[i].getYorig());
@@ -373,6 +376,16 @@ public class Bintree {
                 minX = Math.min(minX, objects[i].getXorig() + objects[i].getXwidth());
                 minY = Math.min(minY, objects[i].getYorig() + objects[i].getYwidth());
                 minZ = Math.min(minZ, objects[i].getZorig() + objects[i].getZwidth());
+            }
+
+            if (obj != null && obj != first)
+            {
+                maxX = Math.max(maxX, obj.getXorig());
+                maxY = Math.max(maxY, obj.getYorig());
+                maxZ = Math.max(maxZ, obj.getZorig());
+                minX = Math.min(minX, obj.getXorig() + obj.getXwidth());
+                minY = Math.min(minY, obj.getYorig() + obj.getYwidth());
+                minZ = Math.min(minZ, obj.getZorig() + obj.getZwidth());
             }
 
             return maxX < minX && maxY < minY && maxZ < minZ;
