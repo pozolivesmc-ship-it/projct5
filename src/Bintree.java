@@ -212,7 +212,11 @@ public class Bintree {
         public BinNode insert(AirObject obj, int x, int y, int z, int w, int h, int d, int depth)
         {
             addObject(obj);
-            if (size <= LEAF_MAX || hasCommonIntersection())
+            if (size <= LEAF_MAX)
+            {
+                return this;
+            }
+            if (hasCommonIntersection())
             {
                 return this;
             }
@@ -255,12 +259,12 @@ public class Bintree {
             {
                 return false;
             }
-            int maxX = objects[0].getXorig();
-            int maxY = objects[0].getYorig();
-            int maxZ = objects[0].getZorig();
-            int minX = objects[0].getXorig() + objects[0].getXwidth();
-            int minY = objects[0].getYorig() + objects[0].getYwidth();
-            int minZ = objects[0].getZorig() + objects[0].getZwidth();
+            int ix = objects[0].getXorig();
+            int iy = objects[0].getYorig();
+            int iz = objects[0].getZorig();
+            int iw = objects[0].getXwidth();
+            int ih = objects[0].getYwidth();
+            int id = objects[0].getZwidth();
             for (int i = 1; i < size; i++)
             {
                 int nx = objects[i].getXorig();
@@ -269,35 +273,24 @@ public class Bintree {
                 int nw = objects[i].getXwidth();
                 int nh = objects[i].getYwidth();
                 int nd = objects[i].getZwidth();
-                if (nx > maxX)
+                int maxX = Math.max(ix, nx);
+                int maxY = Math.max(iy, ny);
+                int maxZ = Math.max(iz, nz);
+                int minX = Math.min(ix + iw, nx + nw);
+                int minY = Math.min(iy + ih, ny + nh);
+                int minZ = Math.min(iz + id, nz + nd);
+                iw = minX - maxX;
+                ih = minY - maxY;
+                id = minZ - maxZ;
+                ix = maxX;
+                iy = maxY;
+                iz = maxZ;
+                if (iw <= 0 || ih <= 0 || id <= 0)
                 {
-                    maxX = nx;
-                }
-                if (ny > maxY)
-                {
-                    maxY = ny;
-                }
-                if (nz > maxZ)
-                {
-                    maxZ = nz;
-                }
-                int endX = nx + nw;
-                int endY = ny + nh;
-                int endZ = nz + nd;
-                if (endX < minX)
-                {
-                    minX = endX;
-                }
-                if (endY < minY)
-                {
-                    minY = endY;
-                }
-                if (endZ < minZ)
-                {
-                    minZ = endZ;
+                    return false;
                 }
             }
-            return maxX < minX && maxY < minY && maxZ < minZ;
+            return iw > 0 && ih > 0 && id > 0;
         }
         public void intersect(StringBuilder sb, int x1, int y1, int z1, int w1, int h1, int d1,
             int x2, int y2, int z2, int w2, int h2, int d2, int depth, int[] visited)
