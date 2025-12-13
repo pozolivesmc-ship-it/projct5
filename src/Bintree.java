@@ -212,7 +212,11 @@ public class Bintree {
         public BinNode insert(AirObject obj, int x, int y, int z, int w, int h, int d, int depth)
         {
             addObject(obj);
-            if (size <= LEAF_MAX || hasCommonIntersection())
+            if (size <= LEAF_MAX)
+            {
+                return this;
+            }
+            if (hasCommonIntersection())
             {
                 return this;
             }
@@ -275,16 +279,16 @@ public class Bintree {
                 int minX = Math.min(ix + iw, nx + nw);
                 int minY = Math.min(iy + ih, ny + nh);
                 int minZ = Math.min(iz + id, nz + nd);
-                iw = minX - maxX;
-                ih = minY - maxY;
-                id = minZ - maxZ;
-                ix = maxX;
-                iy = maxY;
-                iz = maxZ;
-                if (iw <= 0 || ih <= 0 || id <= 0)
+                if (maxX >= minX || maxY >= minY || maxZ >= minZ)
                 {
                     return false;
                 }
+                ix = maxX;
+                iy = maxY;
+                iz = maxZ;
+                iw = minX - maxX;
+                ih = minY - maxY;
+                id = minZ - maxZ;
             }
             return iw > 0 && ih > 0 && id > 0;
         }
@@ -300,6 +304,10 @@ public class Bintree {
             sb.append("In leaf node (").append(x2).append(", ").append(y2).append(", ");
             sb.append(z2).append(", ").append(w2).append(", ").append(h2).append(", ");
             sb.append(d2).append(") ").append(depth).append("\r\n");
+            if (!containsPoint(x1, y1, z1, x2, y2, z2, w2, h2, d2))
+            {
+                return;
+            }
             for (int i = 0; i < size; i++)
             {
                 if (overlap(objects[i].getXorig(), objects[i].getYorig(), objects[i].getZorig(),
