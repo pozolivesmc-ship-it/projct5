@@ -86,6 +86,17 @@ public class Bintree {
     }
     public String intersect(int x, int y, int z, int xwid, int ywid, int zwid)
     {
+        if (xwid <= 0 || ywid <= 0 || zwid <= 0)
+        {
+            return null;
+        }
+        if (x < 0 || y < 0 || z < 0 ||
+            x >= WORLD_SIZE || y >= WORLD_SIZE || z >= WORLD_SIZE ||
+            x + xwid > WORLD_SIZE || y + ywid > WORLD_SIZE ||
+            z + zwid > WORLD_SIZE)
+        {
+            return null;
+        }
         visited = 0;
         StringBuilder sb = new StringBuilder();
         if (xwid <= 0 || ywid <= 0 || zwid <= 0)
