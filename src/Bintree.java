@@ -32,18 +32,6 @@ public class Bintree {
         root = root.insert(obj, 0, 0, 0, WORLD_SIZE, WORLD_SIZE, WORLD_SIZE, 0);
     }
     /**
-     * This removes an AirObject from the tree
-     * @param obj object to remove
-     */
-    public void remove(AirObject obj)
-    {
-        if (obj == null)
-        {
-            return;
-        }
-        root = root.remove(obj, 0, 0, 0, WORLD_SIZE, WORLD_SIZE, WORLD_SIZE, 0);
-    }
-    /**
      * This is the printTree method
      * @return String for the tree
      */
@@ -108,7 +96,6 @@ public class Bintree {
         void print(StringBuilder sb, int x, int y, int z, int w, int h, int d, int depth);
         int countNodes();
         BinNode insert(AirObject obj, int x, int y, int z, int w, int h, int d, int depth);
-        BinNode remove(AirObject obj, int x, int y, int z, int w, int h, int d, int depth);
         int intersect(StringBuilder sb, int x1, int y1, int z1, int w1, int h1, int d1,
                        int x2, int y2, int z2, int w2, int h2, int d2, int depth);
         void collisions(StringBuilder sb, int x, int y, int z, int w, int h, int d, int depth);
@@ -134,10 +121,6 @@ public class Bintree {
             LeafNode leaf = new LeafNode();
             leaf.addObject(obj);
             return leaf;
-        }
-        public BinNode remove(AirObject obj, int x, int y, int z, int w, int h, int d, int depth)
-        {
-            return this;
         }
         public int intersect(StringBuilder sb, int x1, int y1, int z1, int w1, int h1, int d1,
             int x2, int y2, int z2, int w2, int h2, int d2, int depth)
@@ -220,35 +203,6 @@ public class Bintree {
             internal.insert(obj, x, y, z, w, h, d, depth);
             return internal;
         }
-        public BinNode remove(AirObject obj, int x, int y, int z, int w, int h, int d, int depth)
-        {
-            int index = -1;
-            for (int i = 0; i < size; i++)
-            {
-                if (objects[i] == obj)
-                {
-                    index = i;
-                    break;
-                }
-            }
-
-            if (index == -1)
-            {
-                return this;
-            }
-
-            for (int i = index; i < size - 1; i++)
-            {
-                objects[i] = objects[i + 1];
-            }
-            size--;
-
-            if (size == 0)
-            {
-                return FLYWEIGHT;
-            }
-            return this;
-        }
         public int intersect(StringBuilder sb, int x1, int y1, int z1, int w1, int h1, int d1,
             int x2, int y2, int z2, int w2, int h2, int d2, int depth)
         {
@@ -269,14 +223,7 @@ public class Bintree {
                 int od = objects[i].getZwidth();
                 if (overlap(ox, oy, oz, ow, oh, od, x2, y2, z2, w2, h2, d2))
                 {
-                    int ix = Math.max(ox, x2);
-                    int iy = Math.max(oy, y2);
-                    int iz = Math.max(oz, z2);
-                    if (ix >= x1 && ix < x1 + w1 && iy >= y1 && iy < y1 + h1 &&
-                        iz >= z1 && iz < z1 + d1)
-                    {
-                        sb.append(objects[i].toString()).append("\r\n");
-                    }
+                    sb.append(objects[i].toString()).append("\r\n");
                 }
             }
             return 1;
@@ -442,72 +389,6 @@ public class Bintree {
                 {
                     right = right.insert(obj, x, y, z + half, w, h, backD, depth + 1);
                 }
-            }
-            return this;
-        }
-        public BinNode remove(AirObject obj, int x, int y, int z, int w, int h, int d, int depth)
-        {
-            int split = depth % 3;
-            if (split == 0)
-            {
-                int half = w / 2;
-                int leftW = half;
-                int rightW = w - half;
-                if (overlap(x, y, z, leftW, h, d, obj.getXorig(), obj.getYorig(), obj.getZorig(),
-                    obj.getXwidth(), obj.getYwidth(), obj.getZwidth()))
-                {
-                    left = left.remove(obj, x, y, z, leftW, h, d, depth + 1);
-                }
-                if (overlap(x + half, y, z, rightW, h, d, obj.getXorig(), obj.getYorig(), obj.getZorig(),
-                    obj.getXwidth(), obj.getYwidth(), obj.getZwidth()))
-                {
-                    right = right.remove(obj, x + half, y, z, rightW, h, d, depth + 1);
-                }
-            }
-            else if (split == 1)
-            {
-                int half = h / 2;
-                int topH = half;
-                int bottomH = h - half;
-                if (overlap(x, y, z, w, topH, d, obj.getXorig(), obj.getYorig(), obj.getZorig(),
-                    obj.getXwidth(), obj.getYwidth(), obj.getZwidth()))
-                {
-                    left = left.remove(obj, x, y, z, w, topH, d, depth + 1);
-                }
-                if (overlap(x, y + half, z, w, bottomH, d, obj.getXorig(), obj.getYorig(), obj.getZorig(),
-                    obj.getXwidth(), obj.getYwidth(), obj.getZwidth()))
-                {
-                    right = right.remove(obj, x, y + half, z, w, bottomH, d, depth + 1);
-                }
-            }
-            else
-            {
-                int half = d / 2;
-                int frontD = half;
-                int backD = d - half;
-                if (overlap(x, y, z, w, h, frontD, obj.getXorig(), obj.getYorig(), obj.getZorig(),
-                    obj.getXwidth(), obj.getYwidth(), obj.getZwidth()))
-                {
-                    left = left.remove(obj, x, y, z, w, h, frontD, depth + 1);
-                }
-                if (overlap(x, y, z + half, w, h, backD, obj.getXorig(), obj.getYorig(), obj.getZorig(),
-                    obj.getXwidth(), obj.getYwidth(), obj.getZwidth()))
-                {
-                    right = right.remove(obj, x, y, z + half, w, h, d - half, depth + 1);
-                }
-            }
-
-            if (left == FLYWEIGHT && right == FLYWEIGHT)
-            {
-                return FLYWEIGHT;
-            }
-            if (left == FLYWEIGHT)
-            {
-                return right;
-            }
-            if (right == FLYWEIGHT)
-            {
-                return left;
             }
             return this;
         }
