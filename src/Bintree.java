@@ -135,14 +135,12 @@ public class Bintree {
     private static class EmptyNode implements BinNode {
         public void print(StringBuilder sb, int x, int y, int z, int w, int h, int d, int depth)
         {
-            spacing(sb, depth);
-            sb.append("E (").append(x).append(", ").append(y).append(", ");
-            sb.append(z).append(", ").append(w).append(", ").append(h).append(", ");
-            sb.append(d).append(") ").append(depth).append("\r\n");
+            // Flyweight nodes do not contribute output
         }
         public int countNodes()
         {
-            return 1;
+            // Flyweight nodes are not counted toward printed nodes
+            return 0;
         }
         public BinNode insert(AirObject obj, int x, int y, int z, int w, int h, int d, int depth)
         {
