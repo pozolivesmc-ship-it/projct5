@@ -135,14 +135,11 @@ public class Bintree {
     private static class EmptyNode implements BinNode {
         public void print(StringBuilder sb, int x, int y, int z, int w, int h, int d, int depth)
         {
-            spacing(sb, depth);
-            sb.append("E (").append(x).append(", ").append(y).append(", ");
-            sb.append(z).append(", ").append(w).append(", ").append(h).append(", ");
-            sb.append(d).append(") ").append(depth).append("\r\n");
+            return;
         }
         public int countNodes()
         {
-            return 1;
+            return 0;
         }
         public BinNode insert(AirObject obj, int x, int y, int z, int w, int h, int d, int depth)
         {
@@ -195,6 +192,14 @@ public class Bintree {
             }
             objects[i + 1] = obj;
             size++;
+        }
+        public int getSize()
+        {
+            return size;
+        }
+        public AirObject getObject(int index)
+        {
+            return objects[index];
         }
         public void print(StringBuilder sb, int x, int y, int z, int w, int h, int d, int depth)
         {
@@ -500,6 +505,40 @@ public class Bintree {
             if (left == FLYWEIGHT && right == FLYWEIGHT)
             {
                 return FLYWEIGHT;
+            }
+            if ((left == FLYWEIGHT || left instanceof LeafNode)
+                && (right == FLYWEIGHT || right instanceof LeafNode))
+            {
+                int total = 0;
+                if (left instanceof LeafNode)
+                {
+                    total += ((LeafNode)left).getSize();
+                }
+                if (right instanceof LeafNode)
+                {
+                    total += ((LeafNode)right).getSize();
+                }
+                if (total <= LEAF_MAX)
+                {
+                    LeafNode merged = new LeafNode();
+                    if (left instanceof LeafNode)
+                    {
+                        LeafNode l = (LeafNode)left;
+                        for (int i = 0; i < l.getSize(); i++)
+                        {
+                            merged.addObject(l.getObject(i));
+                        }
+                    }
+                    if (right instanceof LeafNode)
+                    {
+                        LeafNode r = (LeafNode)right;
+                        for (int i = 0; i < r.getSize(); i++)
+                        {
+                            merged.addObject(r.getObject(i));
+                        }
+                    }
+                    return merged;
+                }
             }
             return this;
         }
