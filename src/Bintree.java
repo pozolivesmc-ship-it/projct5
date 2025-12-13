@@ -86,10 +86,6 @@ public class Bintree {
     }
     public String intersect(int x, int y, int z, int xwid, int ywid, int zwid)
     {
-        if (xwid <= 0 || ywid <= 0 || zwid <= 0)
-        {
-            return null;
-        }
         visited = 0;
         StringBuilder sb = new StringBuilder();
         sb.append("The following objects intersect (");
@@ -308,20 +304,16 @@ public class Bintree {
             sb.append("In leaf node (").append(x2).append(", ").append(y2).append(", ");
             sb.append(z2).append(", ").append(w2).append(", ").append(h2).append(", ");
             sb.append(d2).append(") ").append(depth).append("\r\n");
-            for (int i = 0; i < size; i++)
+            if (containsPoint(x1, y1, z1, x2, y2, z2, w2, h2, d2))
             {
-                if (!overlap(objects[i].getXorig(), objects[i].getYorig(), objects[i].getZorig(),
-                    objects[i].getXwidth(), objects[i].getYwidth(), objects[i].getZwidth(),
-                    x1, y1, z1, w1, h1, d1))
+                for (int i = 0; i < size; i++)
                 {
-                    continue;
-                }
-                int ix = Math.max(objects[i].getXorig(), x1);
-                int iy = Math.max(objects[i].getYorig(), y1);
-                int iz = Math.max(objects[i].getZorig(), z1);
-                if (containsPoint(ix, iy, iz, x2, y2, z2, w2, h2, d2))
-                {
-                    sb.append(objects[i].toString()).append("\r\n");
+                    if (overlap(objects[i].getXorig(), objects[i].getYorig(), objects[i].getZorig(),
+                            objects[i].getXwidth(), objects[i].getYwidth(), objects[i].getZwidth(),
+                            x1, y1, z1, w1, h1, d1))
+                    {
+                        sb.append(objects[i].toString()).append("\r\n");
+                    }
                 }
             }
         }
