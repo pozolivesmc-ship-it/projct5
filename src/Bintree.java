@@ -200,25 +200,19 @@ public class Bintree {
         }
         public BinNode insert(AirObject obj, int x, int y, int z, int w, int h, int d, int depth)
         {
-            if (size < LEAF_MAX)
+            addObject(obj);
+
+            if (size > LEAF_MAX && !commonIntersection())
             {
-                addObject(obj);
-                return this;
+                InternalNode internal = new InternalNode();
+                for (int i = 0; i < size; i++)
+                {
+                    internal.insert(objects[i], x, y, z, w, h, d, depth);
+                }
+                return internal;
             }
 
-            if (commonIntersection(obj))
-            {
-                addObject(obj);
-                return this;
-            }
-
-            InternalNode internal = new InternalNode();
-            for (int i = 0; i < size; i++)
-            {
-                internal.insert(objects[i], x, y, z, w, h, d, depth);
-            }
-            internal.insert(obj, x, y, z, w, h, d, depth);
-            return internal;
+            return this;
         }
         public BinNode remove(AirObject obj, int x, int y, int z, int w, int h, int d, int depth)
         {
@@ -255,11 +249,6 @@ public class Bintree {
             if (!overlap(x1, y1, z1, w1, h1, d1, x2, y2, z2, w2, h2, d2))
             {
                 return 0;
-            }
-            if (x2 < x1 || x2 >= x1 + w1 || y2 < y1 || y2 >= y1 + h1 || z2 < z1
-                || z2 >= z1 + d1)
-            {
-                return 1;
             }
             sb.append("In leaf node (").append(x1).append(", ").append(y1).append(", ");
             sb.append(z1).append(", ").append(w1).append(", ").append(h1).append(", ");
@@ -351,21 +340,21 @@ public class Bintree {
             return false;
         }
 
-        private boolean commonIntersection(AirObject obj)
+        private boolean commonIntersection()
         {
             if (size == 0)
             {
                 return false;
             }
 
-            int maxX = obj.getXorig();
-            int maxY = obj.getYorig();
-            int maxZ = obj.getZorig();
-            int minX = obj.getXorig() + obj.getXwidth();
-            int minY = obj.getYorig() + obj.getYwidth();
-            int minZ = obj.getZorig() + obj.getZwidth();
+            int maxX = objects[0].getXorig();
+            int maxY = objects[0].getYorig();
+            int maxZ = objects[0].getZorig();
+            int minX = objects[0].getXorig() + objects[0].getXwidth();
+            int minY = objects[0].getYorig() + objects[0].getYwidth();
+            int minZ = objects[0].getZorig() + objects[0].getZwidth();
 
-            for (int i = 0; i < size; i++)
+            for (int i = 1; i < size; i++)
             {
                 maxX = Math.max(maxX, objects[i].getXorig());
                 maxY = Math.max(maxY, objects[i].getYorig());
