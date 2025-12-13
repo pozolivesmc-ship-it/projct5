@@ -90,13 +90,6 @@ public class Bintree {
         {
             return null;
         }
-        if (x < 0 || y < 0 || z < 0 ||
-            x >= WORLD_SIZE || y >= WORLD_SIZE || z >= WORLD_SIZE ||
-            x + xwid > WORLD_SIZE || y + ywid > WORLD_SIZE ||
-            z + zwid > WORLD_SIZE)
-        {
-            return null;
-        }
         visited = 0;
         StringBuilder sb = new StringBuilder();
         sb.append("The following objects intersect (");
@@ -315,19 +308,20 @@ public class Bintree {
             sb.append("In leaf node (").append(x2).append(", ").append(y2).append(", ");
             sb.append(z2).append(", ").append(w2).append(", ").append(h2).append(", ");
             sb.append(d2).append(") ").append(depth).append("\r\n");
-            int ix = Math.max(x1, x2);
-            int iy = Math.max(y1, y2);
-            int iz = Math.max(z1, z2);
-            if (containsPoint(ix, iy, iz, x2, y2, z2, w2, h2, d2))
+            for (int i = 0; i < size; i++)
             {
-                for (int i = 0; i < size; i++)
+                if (!overlap(objects[i].getXorig(), objects[i].getYorig(), objects[i].getZorig(),
+                    objects[i].getXwidth(), objects[i].getYwidth(), objects[i].getZwidth(),
+                    x1, y1, z1, w1, h1, d1))
                 {
-                    if (overlap(objects[i].getXorig(), objects[i].getYorig(), objects[i].getZorig(),
-                            objects[i].getXwidth(), objects[i].getYwidth(), objects[i].getZwidth(),
-                            x1, y1, z1, w1, h1, d1))
-                    {
-                        sb.append(objects[i].toString()).append("\r\n");
-                    }
+                    continue;
+                }
+                int ix = Math.max(objects[i].getXorig(), x1);
+                int iy = Math.max(objects[i].getYorig(), y1);
+                int iz = Math.max(objects[i].getZorig(), z1);
+                if (containsPoint(ix, iy, iz, x2, y2, z2, w2, h2, d2))
+                {
+                    sb.append(objects[i].toString()).append("\r\n");
                 }
             }
         }
