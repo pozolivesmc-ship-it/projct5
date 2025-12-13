@@ -94,8 +94,12 @@ public class SkipList<K extends Comparable<K>, V> {
     private int randomLevel() 
     {
         int level;
-        for (level = 0; Math.abs(rnd.nextInt()) % 2 == 0; level++) { 
+        for (level = 0; Math.abs(rnd.nextInt()) % 2 == 0; level++) {
           ; // Do nothing
+        }
+        if (level > HIGHEST_LEVEL)
+        {
+            return HIGHEST_LEVEL;
         }
         return level;
     }
@@ -124,10 +128,9 @@ public class SkipList<K extends Comparable<K>, V> {
         }
         //Move to it if exists
         start = start.forward[0];
-        //If found and names match replace
+        //If found and names match reject duplicate
         if (start != null && start.key.compareTo(name) == 0)
         {
-            start.value = object;
             return;
         }
         //If not create node at random level
@@ -188,6 +191,10 @@ public class SkipList<K extends Comparable<K>, V> {
             }
             update[i].forward[i] = start.forward[i];
         }
+        while (level > 0 && head.forward[level] == null)
+        {
+            level--;
+        }
         //Was successfully removed
         return true;
     }
@@ -231,15 +238,18 @@ public class SkipList<K extends Comparable<K>, V> {
         sb.append("Found these records in the range ");
         sb.append(begin).append(" to ").append(end);
         sb.append("\r\n");
-        SkipNode<K, V> start = head.forward[0];
-        //Goes through and prints only the keys between begin and end
-        while (start != null)
+        SkipNode<K, V> start = head;
+        for (int i = level; i >= 0; i--)
         {
-            if (start.key.compareTo(begin) >= 0 &&
-                start.key.compareTo(end) <= 0)
+            while (start.forward[i] != null && start.forward[i].key.compareTo(begin) < 0)
             {
-                sb.append(start.value.toString()).append("\r\n");
+                start = start.forward[i];
             }
+        }
+        start = start.forward[0];
+        while (start != null && start.key.compareTo(end) <= 0)
+        {
+            sb.append(start.value.toString()).append("\r\n");
             start = start.forward[0];
         }
         return sb.toString();
