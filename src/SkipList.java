@@ -127,15 +127,18 @@ public class SkipList<K extends Comparable<K>, V> {
         //If found and names match replace
         if (start != null && start.key.compareTo(name) == 0)
         {
-            start.value = object;
             return;
         }
         //If not create node at random level
         int rndLevel = randomLevel();
+        if (rndLevel > HIGHEST_LEVEL)
+        {
+            rndLevel = HIGHEST_LEVEL;
+        }
         //Checks if the node level is higher
         if (rndLevel > level)
         {
-            //Updates each new level 
+            //Updates each new level
             for (int i = level + 1; i <= rndLevel; i++)
             {
                 update[i] = head;
@@ -189,6 +192,10 @@ public class SkipList<K extends Comparable<K>, V> {
             update[i].forward[i] = start.forward[i];
         }
         //Was successfully removed
+        while (level > 0 && head.forward[level] == null)
+        {
+            level--;
+        }
         return true;
     }
     /**
