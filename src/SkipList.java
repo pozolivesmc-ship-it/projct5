@@ -1,10 +1,7 @@
 import java.util.Random;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
- * This is the SkipList class
+ * This is the SkipList class 
  * @author {Giovanni Garcia}
  * @version {12.9.2025}
  * @param <K> is for key (String)
@@ -193,21 +190,6 @@ public class SkipList<K extends Comparable<K>, V> {
         }
         //Was successfully removed
         return true;
-    }
-    /**
-     * Returns a list of all values in ascending key order.
-     * @return ordered list of values
-     */
-    public List<V> values()
-    {
-        List<V> result = new ArrayList<>();
-        SkipNode<K, V> current = head.forward[0];
-        while (current != null)
-        {
-            result.add(current.value);
-            current = current.forward[0];
-        }
-        return result;
     }
     /**
      * This is the printList method
