@@ -48,11 +48,11 @@ public class Bintree {
      * This is the printTree method
      * @return String for the tree
      */
-    public String printTree() 
+    public String printTree()
     {
         StringBuilder sb = new StringBuilder();
         root.print(sb, 0, 0, 0, WORLD_SIZE, WORLD_SIZE, WORLD_SIZE, 0);
-        sb.append(root.countNodes()).append(" Bintree nodes printed\r\n");
+        sb.append(root.countNodes()).append(" bintree nodes printed\r\n");
         return sb.toString();
     }
     private static void spacing(StringBuilder sb, int depth)
@@ -99,9 +99,13 @@ public class Bintree {
         }
         visited = 0;
         StringBuilder sb = new StringBuilder();
-        sb.append("The following objects intersect (");
+        sb.append("the following objects intersect ");
         sb.append(x).append(" ").append(y).append(" ").append(z).append(" ");
-        sb.append(xwid).append(" ").append(ywid).append(" ").append(zwid).append("):\r\n");
+        sb.append(xwid).append(" ").append(ywid).append(" ").append(zwid).append("\r\n");
+        if (xwid <= 0 || ywid <= 0 || zwid <= 0)
+        {
+            return null;
+        }
         if (root == FLYWEIGHT)
         {
             visited = 1;
@@ -118,7 +122,7 @@ public class Bintree {
     public String collisions()
     {
         StringBuilder sb = new StringBuilder();
-        sb.append("The following collisions exist in the database:\r\n");
+        sb.append("the following collisions exist in the database:\r\n");
         root.collisions(sb, 0, 0, 0, WORLD_SIZE, WORLD_SIZE, WORLD_SIZE, 0);
         return sb.toString();
     }
@@ -142,14 +146,11 @@ public class Bintree {
     private static class EmptyNode implements BinNode {
         public void print(StringBuilder sb, int x, int y, int z, int w, int h, int d, int depth)
         {
-            spacing(sb, depth);
-            sb.append("E (").append(x).append(", ").append(y).append(", ");
-            sb.append(z).append(", ").append(w).append(", ").append(h).append(", ");
-            sb.append(d).append(") ").append(depth).append("\r\n");
+            return;
         }
         public int countNodes()
         {
-            return 1;
+            return 0;
         }
         public BinNode insert(AirObject obj, int x, int y, int z, int w, int h, int d, int depth)
         {
@@ -206,14 +207,14 @@ public class Bintree {
         public void print(StringBuilder sb, int x, int y, int z, int w, int h, int d, int depth)
         {
             spacing(sb, depth);
-            sb.append("Leaf with ").append(size).append(" objects (");
-            sb.append(x).append(", ").append(y).append(", ");
-            sb.append(z).append(", ").append(w).append(", ").append(h).append(", ");
-            sb.append(d).append(") ").append(depth).append("\r\n");
+            sb.append("leaf with ").append(size).append(" objects ");
+            sb.append(x).append(" ").append(y).append(" ");
+            sb.append(z).append(" ").append(w).append(" ").append(h).append(" ");
+            sb.append(d).append(" ").append(depth).append("\r\n");
             for (int i = 0; i < size; i++)
             {
                 spacing(sb, depth + 1);
-                sb.append("(").append(objects[i].toString()).append(")\r\n");
+                sb.append(objects[i].toString()).append("\r\n");
             }
         }
         public int countNodes()
@@ -312,9 +313,9 @@ public class Bintree {
             }
             visited[0]++;
             spacing(sb, depth);
-            sb.append("In leaf node (").append(x2).append(", ").append(y2).append(", ");
-            sb.append(z2).append(", ").append(w2).append(", ").append(h2).append(", ");
-            sb.append(d2).append(") ").append(depth).append("\r\n");
+            sb.append("in leaf node ").append(x2).append(" ").append(y2).append(" ");
+            sb.append(z2).append(" ").append(w2).append(" ").append(h2).append(" ");
+            sb.append(d2).append(" ").append(depth).append("\r\n");
             int ix = Math.max(x1, x2);
             int iy = Math.max(y1, y2);
             int iz = Math.max(z1, z2);
@@ -334,9 +335,9 @@ public class Bintree {
         public void collisions(StringBuilder sb, int x, int y, int z, int w, int h, int d, int depth)
         {
             spacing(sb, depth);
-            sb.append("In leaf node (").append(x).append(", ").append(y).append(", ");
-            sb.append(z).append(", ").append(w).append(", ").append(h).append(", ");
-            sb.append(d).append(") ").append(depth).append("\r\n");
+            sb.append("in leaf node ").append(x).append(" ").append(y).append(" ");
+            sb.append(z).append(" ").append(w).append(" ").append(h).append(" ");
+            sb.append(d).append(" ").append(depth).append("\r\n");
             for (int i = 0; i < size; i++)
             {
                 for (int j = i + 1; j < size; j++)
@@ -375,10 +376,10 @@ public class Bintree {
         public void print(StringBuilder sb, int x, int y, int z, int w, int h, int d, int depth)
         {
             spacing(sb, depth);
-            sb.append("I (");
-            sb.append(x).append(", ").append(y).append(", ");
-            sb.append(z).append(", ").append(w).append(", ").append(h).append(", ");
-            sb.append(d).append(") ").append(depth).append("\r\n");
+            sb.append("i ");
+            sb.append(x).append(" ").append(y).append(" ");
+            sb.append(z).append(" ").append(w).append(" ").append(h).append(" ");
+            sb.append(d).append(" ").append(depth).append("\r\n");
             
             int split = depth % 3;
             //X split then y split then z split
@@ -518,9 +519,9 @@ public class Bintree {
             }
             visited[0]++;
             spacing(sb, depth);
-            sb.append("In Internal node (").append(x2).append(", ").append(y2).append(", ");
-            sb.append(z2).append(", ").append(w2).append(", ").append(h2).append(", ");
-            sb.append(d2).append(") ").append(depth).append("\r\n");
+            sb.append("in internal node ").append(x2).append(" ").append(y2).append(" ");
+            sb.append(z2).append(" ").append(w2).append(" ").append(h2).append(" ");
+            sb.append(d2).append(" ").append(depth).append("\r\n");
 
             int split = depth % 3;
             if (split == 0)
