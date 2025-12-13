@@ -212,7 +212,11 @@ public class Bintree {
         public BinNode insert(AirObject obj, int x, int y, int z, int w, int h, int d, int depth)
         {
             addObject(obj);
-            if (size <= LEAF_MAX || hasCommonIntersection())
+            if (size <= LEAF_MAX)
+            {
+                return this;
+            }
+            if (hasCommonIntersection())
             {
                 return this;
             }
@@ -300,13 +304,16 @@ public class Bintree {
             sb.append("In leaf node (").append(x2).append(", ").append(y2).append(", ");
             sb.append(z2).append(", ").append(w2).append(", ").append(h2).append(", ");
             sb.append(d2).append(") ").append(depth).append("\r\n");
-            for (int i = 0; i < size; i++)
+            if (containsPoint(x1, y1, z1, x2, y2, z2, w2, h2, d2))
             {
-                if (overlap(objects[i].getXorig(), objects[i].getYorig(), objects[i].getZorig(),
-                        objects[i].getXwidth(), objects[i].getYwidth(), objects[i].getZwidth(),
-                        x1, y1, z1, w1, h1, d1))
+                for (int i = 0; i < size; i++)
                 {
-                    sb.append(objects[i].toString()).append("\r\n");
+                    if (overlap(objects[i].getXorig(), objects[i].getYorig(), objects[i].getZorig(),
+                            objects[i].getXwidth(), objects[i].getYwidth(), objects[i].getZwidth(),
+                            x1, y1, z1, w1, h1, d1))
+                    {
+                        sb.append(objects[i].toString()).append("\r\n");
+                    }
                 }
             }
         }
