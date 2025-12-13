@@ -296,6 +296,18 @@ public class Bintree {
             }
             return iw > 0 && ih > 0 && id > 0;
         }
+        public int getSize()
+        {
+            return size;
+        }
+        public AirObject getObject(int index)
+        {
+            return objects[index];
+        }
+        public boolean hasCommonIntersectionPublic()
+        {
+            return hasCommonIntersection();
+        }
         public void intersect(StringBuilder sb, int x1, int y1, int z1, int w1, int h1, int d1,
             int x2, int y2, int z2, int w2, int h2, int d2, int depth, int[] visited)
         {
@@ -361,6 +373,42 @@ public class Bintree {
     private static class InternalNode implements BinNode {
         private BinNode left;
         private BinNode right;
+
+        private static int addUnique(AirObject obj, AirObject[] arr, int count)
+        {
+            for (int i = 0; i < count; i++)
+            {
+                if (arr[i] == obj)
+                {
+                    return count;
+                }
+            }
+            if (count < arr.length)
+            {
+                arr[count] = obj;
+                return count + 1;
+            }
+            return count;
+        }
+        private static int gatherObjects(BinNode node, AirObject[] buffer, int count)
+        {
+            if (node instanceof LeafNode)
+            {
+                LeafNode leaf = (LeafNode)node;
+                for (int i = 0; i < leaf.getSize(); i++)
+                {
+                    count = addUnique(leaf.getObject(i), buffer, count);
+                }
+                return count;
+            }
+            if (node instanceof InternalNode)
+            {
+                InternalNode internal = (InternalNode)node;
+                count = gatherObjects(internal.left, buffer, count);
+                count = gatherObjects(internal.right, buffer, count);
+            }
+            return count;
+        }
         
         public InternalNode() {
             left = FLYWEIGHT;
@@ -500,6 +548,44 @@ public class Bintree {
             if (left == FLYWEIGHT && right == FLYWEIGHT)
             {
                 return FLYWEIGHT;
+            }
+            if (right == FLYWEIGHT)
+            {
+                return left;
+            }
+            if (left == FLYWEIGHT)
+            {
+                return right;
+            }
+            if (left instanceof LeafNode && right instanceof LeafNode)
+            {
+                LeafNode l = (LeafNode)left;
+                LeafNode r = (LeafNode)right;
+                int total = l.getSize() + r.getSize();
+                LeafNode combined = new LeafNode();
+                for (int i = 0; i < l.getSize(); i++)
+                {
+                    combined.addObject(l.getObject(i));
+                }
+                for (int i = 0; i < r.getSize(); i++)
+                {
+                    combined.addObject(r.getObject(i));
+                }
+                if (combined.getSize() <= LEAF_MAX || combined.hasCommonIntersectionPublic())
+                {
+                    return combined;
+                }
+            }
+            AirObject[] buffer = new AirObject[32];
+            int count = gatherObjects(this, buffer, 0);
+            if (count <= LEAF_MAX)
+            {
+                LeafNode merged = new LeafNode();
+                for (int i = 0; i < count; i++)
+                {
+                    merged.addObject(buffer[i]);
+                }
+                return merged;
             }
             return this;
         }
