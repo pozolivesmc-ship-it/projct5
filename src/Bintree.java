@@ -255,12 +255,12 @@ public class Bintree {
             {
                 return false;
             }
-            int ix = objects[0].getXorig();
-            int iy = objects[0].getYorig();
-            int iz = objects[0].getZorig();
-            int iw = objects[0].getXwidth();
-            int ih = objects[0].getYwidth();
-            int id = objects[0].getZwidth();
+            int maxX = objects[0].getXorig();
+            int maxY = objects[0].getYorig();
+            int maxZ = objects[0].getZorig();
+            int minX = objects[0].getXorig() + objects[0].getXwidth();
+            int minY = objects[0].getYorig() + objects[0].getYwidth();
+            int minZ = objects[0].getZorig() + objects[0].getZwidth();
             for (int i = 1; i < size; i++)
             {
                 int nx = objects[i].getXorig();
@@ -269,24 +269,35 @@ public class Bintree {
                 int nw = objects[i].getXwidth();
                 int nh = objects[i].getYwidth();
                 int nd = objects[i].getZwidth();
-                int maxX = Math.max(ix, nx);
-                int maxY = Math.max(iy, ny);
-                int maxZ = Math.max(iz, nz);
-                int minX = Math.min(ix + iw, nx + nw);
-                int minY = Math.min(iy + ih, ny + nh);
-                int minZ = Math.min(iz + id, nz + nd);
-                iw = minX - maxX;
-                ih = minY - maxY;
-                id = minZ - maxZ;
-                ix = maxX;
-                iy = maxY;
-                iz = maxZ;
-                if (iw <= 0 || ih <= 0 || id <= 0)
+                if (nx > maxX)
                 {
-                    return false;
+                    maxX = nx;
+                }
+                if (ny > maxY)
+                {
+                    maxY = ny;
+                }
+                if (nz > maxZ)
+                {
+                    maxZ = nz;
+                }
+                int nxMax = nx + nw;
+                int nyMax = ny + nh;
+                int nzMax = nz + nd;
+                if (nxMax < minX)
+                {
+                    minX = nxMax;
+                }
+                if (nyMax < minY)
+                {
+                    minY = nyMax;
+                }
+                if (nzMax < minZ)
+                {
+                    minZ = nzMax;
                 }
             }
-            return iw > 0 && ih > 0 && id > 0;
+            return maxX < minX && maxY < minY && maxZ < minZ;
         }
         public void intersect(StringBuilder sb, int x1, int y1, int z1, int w1, int h1, int d1,
             int x2, int y2, int z2, int w2, int h2, int d2, int depth, int[] visited)
@@ -300,13 +311,16 @@ public class Bintree {
             sb.append("In leaf node (").append(x2).append(", ").append(y2).append(", ");
             sb.append(z2).append(", ").append(w2).append(", ").append(h2).append(", ");
             sb.append(d2).append(") ").append(depth).append("\r\n");
-            for (int i = 0; i < size; i++)
+            if (containsPoint(x1, y1, z1, x2, y2, z2, w2, h2, d2))
             {
-                if (overlap(objects[i].getXorig(), objects[i].getYorig(), objects[i].getZorig(),
-                        objects[i].getXwidth(), objects[i].getYwidth(), objects[i].getZwidth(),
-                        x1, y1, z1, w1, h1, d1))
+                for (int i = 0; i < size; i++)
                 {
-                    sb.append(objects[i].toString()).append("\r\n");
+                    if (overlap(objects[i].getXorig(), objects[i].getYorig(), objects[i].getZorig(),
+                            objects[i].getXwidth(), objects[i].getYwidth(), objects[i].getZwidth(),
+                            x1, y1, z1, w1, h1, d1))
+                    {
+                        sb.append(objects[i].toString()).append("\r\n");
+                    }
                 }
             }
         }
