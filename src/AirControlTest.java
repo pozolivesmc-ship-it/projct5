@@ -8,7 +8,7 @@ import student.TestCase;
 public class AirControlTest extends TestCase {
 
     /**
-     * Sets up the tests that follow. In general, used for initialization
+     * Sets up the tests that follow. In general, used for initialization.
      */
     public void setUp() {
         // Nothing here
@@ -231,7 +231,7 @@ public class AirControlTest extends TestCase {
             0, 10, 1, 20, 2, 30, "USAir", 717, 4)));
         assertFuzzyEquals(
                 w.print("Air1"),
-        	    "Airplane Air1 0 10 1 20 2 30 USAir 717 4");
+                "Airplane Air1 0 10 1 20 2 30 USAir 717 4");
     }
     /**
      * This tests when there's 2 of the same name
@@ -248,7 +248,7 @@ public class AirControlTest extends TestCase {
         assertTrue(w.add(b1));
         assertFalse(w.add(b2));
         assertFuzzyEquals(w.print("pterodactyl"), "Bird pterodactyl 0 100"
-        		+ " 20 10 50 50 Dinosaur 1");
+                + " 20 10 50 50 Dinosaur 1");
     }
     /**
      * This tests the delete logic 
@@ -335,7 +335,7 @@ public class AirControlTest extends TestCase {
         String result = w.rangeprint("a", "z");
         assertNotNull(result);
         assertTrue(result.startsWith("Found these records in the range a"
-        		+ " to z"));  
+                + " to z"));  
     }
     /**
      * This tests the printbintree() method
@@ -494,4 +494,49 @@ public class AirControlTest extends TestCase {
         assertFalse(result.contains("Balloon B1"));
         assertTrue(result.startsWith("The following objects intersect"));
     }
+    /**
+     * This test for when delete deals with a null value
+     */
+    public void testDeleteNull()
+    {
+        Random rnd = new Random();
+        rnd.setSeed(0xCAFEBEEF);
+        WorldDB w = new WorldDB(rnd);
+        assertTrue(w.add(new Balloon("B1",
+            10, 11, 11, 21, 12, 31, "hot_air", 15)));
+        assertNull(w.delete(null));
+    }
+    /**
+     * This test for when print deals with a null value
+     */
+    public void testPrintNull()
+    {
+        Random rnd = new Random();
+        rnd.setSeed(0xCAFEBEEF);
+        WorldDB w = new WorldDB(rnd);
+        assertTrue(w.add(new Balloon("B1",
+            10, 11, 11, 21, 12, 31, "hot_air", 15)));
+        assertNull(w.print(null));
+        
+    }
+    /**
+     * This test for bad bird or drone input
+     */
+    public void testBadInput2()
+    {
+        Random rnd = new Random();
+        rnd.setSeed(0xCAFEBEEF);
+        WorldDB w = new WorldDB(rnd);
+        assertFalse(w.add(new Drone("Air2",
+            100, 1010, 101, 924, 2, 0, "Droners", 3)));
+        assertFalse(w.add(new Drone("Air2",
+            2000, 1010, 101, 924, 2, 0, "Droners", 3)));
+        assertFalse(w.add(new Bird("pterodactyl",
+            -1, 100, 20, 10, 50, 50, "Dinosaur", 1)));
+        assertFalse(w.add(new Bird("pterodactyl",
+            1, 100, 20, 0, 50, 50, "Dinosaur", 1)));
+    }
+    
+    
+    
 }

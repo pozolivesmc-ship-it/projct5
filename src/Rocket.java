@@ -1,4 +1,3 @@
-
 /**
  * This is the Rocket class 
  * @author {Giovanni Garcia}

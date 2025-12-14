@@ -1,4 +1,3 @@
-
 /**
  * This is the Drone class 
  * @author {Giovanni Garcia}

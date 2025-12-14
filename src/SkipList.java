@@ -108,8 +108,8 @@ public class SkipList<K extends Comparable<K>, V> {
     public void insert(K name, V object)
     {
         //Update array to keep track at each level
-        SkipNode<K, V>[] update = 
-        		(SkipNode<K, V>[])new SkipNode[HIGHEST_LEVEL + 1];
+        SkipNode<K, V>[] update = (SkipNode<K, V>[])
+                                  new SkipNode[HIGHEST_LEVEL + 1];
         //Start from the head
         SkipNode<K, V> start = head;
         //Start comparing from the highest level to level 0
@@ -164,7 +164,7 @@ public class SkipList<K extends Comparable<K>, V> {
     public boolean remove(K name)
     {
         SkipNode<K, V>[] update = (SkipNode<K, V>[])new SkipNode
-        		[HIGHEST_LEVEL + 1];
+                [HIGHEST_LEVEL + 1];
         //Start from the head
         SkipNode<K, V> start = head;
         //Start comparing from the highest level 
@@ -214,7 +214,7 @@ public class SkipList<K extends Comparable<K>, V> {
         StringBuilder sb = new StringBuilder();
         sb.append("Node has depth ")
         .append(HIGHEST_LEVEL)
-        	.append(", Value (null)\r\n");
+            .append(", Value (null)\r\n");
         SkipNode<K, V> start = head.forward[0];
         int count = 0;
         //This starts at level 0 and prints each node

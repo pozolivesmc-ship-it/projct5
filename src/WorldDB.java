@@ -206,7 +206,8 @@ public class WorldDB implements ATC {
         if (x < 0 || y < 0 || z < 0 || 
             xwid <= 0 || ywid <= 0 || zwid <= 0 ||
             x >= worldSize || y >= worldSize || z >= worldSize ||
-            x + xwid > worldSize || y + ywid > worldSize || z + zwid > worldSize)
+            x + xwid > worldSize || y + ywid > worldSize 
+            || z + zwid > worldSize)
         {
             return null;
         }
