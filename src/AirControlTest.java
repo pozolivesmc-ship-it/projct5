@@ -226,6 +226,7 @@ public class AirControlTest extends TestCase {
         Random rnd = new Random();
         rnd.setSeed(0xCAFEBEEF);
         WorldDB w = new WorldDB(rnd);
+        assertFalse(w.add(null));
         assertTrue(w.add(new AirPlane("Air1",
             0, 10, 1, 20, 2, 30, "USAir", 717, 4)));
         assertFuzzyEquals(
@@ -542,11 +543,102 @@ public class AirControlTest extends TestCase {
      */
     public void testBintreeHelpers()
     {
+        assertTrue(Bintree.overlap(0, 0, 0, 2, 2, 2, 1, 1, 1, 2, 2, 2));
+        assertFalse(Bintree.overlap(0, 0, 0, 1, 1, 1, 2, 2, 2, 1, 1, 1));
+        assertTrue(Bintree.containsPoint(1, 1, 1, 1, 1, 1, 2, 2, 2));
+        assertFalse(Bintree.containsPoint(5, 5, 5, 0, 0, 0, 2, 2, 2));
+
         Bintree tree = new Bintree();
+        tree.insert(null);
         assertFuzzyEquals(
             "E (0, 0, 0, 1024, 1024, 1024) 0\r\n"
                 + "1 Bintree nodes printed\r\n",
             tree.printTree());
+    }
+
+    /**
+     * Covers ordering, expansion, removal, and intersection checks in LeafNode.
+     */
+    public void testLeafNodeOperations()
+    {
+        LeafNode leaf = new LeafNode();
+        AirObject z = new Balloon("Z", 0, 0, 0, 10, 10, 10, "hot", 1);
+        AirObject a = new Balloon("A", 20, 20, 20, 10, 10, 10, "hot", 2);
+        AirObject m = new Balloon("M", 40, 40, 40, 10, 10, 10, "hot", 3);
+        AirObject b = new Balloon("B", 60, 60, 60, 10, 10, 10, "hot", 4);
+        AirObject c = new Balloon("C", 80, 80, 80, 10, 10, 10, "hot", 5);
+
+        leaf.addObject(z);
+        leaf.addObject(a);
+        leaf.addObject(m);
+        leaf.addObject(b);
+        leaf.addObject(c);
+
+        assertEquals(5, leaf.getSize());
+        assertEquals(a, leaf.getObject(0));
+        assertEquals(z, leaf.getObject(4));
+
+        BinNode afterRemove = leaf.remove(a, 0, 0, 0, 0, 0, 0, 0);
+        assertSame(leaf, afterRemove);
+        assertEquals(4, leaf.getSize());
+
+        afterRemove = leaf.remove(z, 0, 0, 0, 0, 0, 0, 0);
+        afterRemove = afterRemove.remove(m, 0, 0, 0, 0, 0, 0, 0);
+        afterRemove = afterRemove.remove(b, 0, 0, 0, 0, 0, 0, 0);
+        BinNode empty = afterRemove.remove(c, 0, 0, 0, 0, 0, 0, 0);
+        assertSame(Bintree.FLYWEIGHT, empty);
+
+        LeafNode overlapLeaf = new LeafNode();
+        overlapLeaf.addObject(new AirPlane("AA", 0, 0, 0, 10, 10, 10,
+            "A", 1, 1));
+        overlapLeaf.addObject(new AirPlane("AB", 5, 5, 5, 10, 10, 10,
+            "A", 1, 1));
+        assertTrue(overlapLeaf.hasCommonIntersection());
+
+        LeafNode disjointLeaf = new LeafNode();
+        disjointLeaf.addObject(new Drone("DA", 0, 0, 0, 5, 5, 5,
+            "D", 1));
+        disjointLeaf.addObject(new Drone("DB", 20, 20, 20, 5, 5, 5,
+            "D", 1));
+        assertFalse(disjointLeaf.hasCommonIntersection());
+    }
+
+    /**
+     * Ensures leaf splitting creates an InternalNode and removal merges back.
+     */
+    public void testLeafSplitAndInternalMerge()
+    {
+        AirObject a = new Balloon("A1", 0, 0, 0, 10, 10, 10, "hot", 1);
+        AirObject b = new Balloon("B1", 100, 0, 0, 10, 10, 10, "hot", 1);
+        AirObject c = new Balloon("C1", 200, 0, 0, 10, 10, 10, "hot", 1);
+        AirObject d = new Balloon("D1", 300, 0, 0, 10, 10, 10, "hot", 1);
+
+        LeafNode leaf = new LeafNode();
+        BinNode node = leaf.insert(a, 0, 0, 0, Bintree.WORLD_SIZE,
+            Bintree.WORLD_SIZE, Bintree.WORLD_SIZE, 0);
+        node = node.insert(b, 0, 0, 0, Bintree.WORLD_SIZE, Bintree.WORLD_SIZE,
+            Bintree.WORLD_SIZE, 0);
+        node = node.insert(c, 0, 0, 0, Bintree.WORLD_SIZE, Bintree.WORLD_SIZE,
+            Bintree.WORLD_SIZE, 0);
+        node = node.insert(d, 0, 0, 0, Bintree.WORLD_SIZE, Bintree.WORLD_SIZE,
+            Bintree.WORLD_SIZE, 0);
+
+        assertTrue(node instanceof InternalNode);
+        StringBuilder sb = new StringBuilder();
+        node.print(sb, 0, 0, 0, Bintree.WORLD_SIZE, Bintree.WORLD_SIZE,
+            Bintree.WORLD_SIZE, 0);
+        assertTrue(sb.toString().contains("I ("));
+
+        Bintree tree = new Bintree();
+        tree.insert(a);
+        tree.insert(b);
+        tree.insert(c);
+        tree.insert(d);
+        tree.remove(d);
+
+        String merged = tree.printTree();
+        assertTrue(merged.contains("Leaf with 3 objects"));
+        assertFalse(merged.startsWith("I ("));
     }
     
     
